@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import Gaiyya from "../assets/gallery/Gaiyya.jpg.jpeg";
-import Ishu from "../assets/gallery/Ishu.jpg.jpeg";
-import Visha from "../assets/gallery/Visha.jpg.jpeg";
+import Gaiyya from "../assets/gallery/Gaiyya.jpg";
+import Ishu from "../assets/gallery/Ishu.jpg";
+import Visha from "../assets/gallery/Visha.jpg";
 import josh from "../assets/gallery/hh.jpg";
-import Dilshan from "../assets/gallery/dilshan.jpeg";
-import Fahad from "../assets/gallery/Fahad.jpg.jpeg";
-import kasuni from "../assets/gallery/kasuni.jpg.jpeg";
+import Dilshan from "../assets/gallery/Dilshan.jpg";
+import Fahad from "../assets/gallery/Fahad.jpg";
+import kasuni from "../assets/gallery/kasuni.jpg";
 
 const team = [
   { name: "Joshuwa", role: "CEO & Founder", color: "from-pink-500 to-rose-400", image: josh },
