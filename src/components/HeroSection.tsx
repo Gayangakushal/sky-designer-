@@ -101,4 +101,8 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
   );
 };
 
+<<<<<<< HEAD
 export default HeroSection;
+=======
+export default HeroSection;
+>>>>>>> 8fb200d5854998cc504ce09f702283fa8feb1f4e
