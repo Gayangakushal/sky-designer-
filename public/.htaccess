@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Keep real files, directories, and PHP API endpoints untouched.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# React Router fallback.
+RewriteRule ^ index.html [L]

@@ -1,47 +1,107 @@
 import { motion } from "framer-motion";
+import { ArrowUpRight, BadgeCheck, Globe2, Lightbulb, Zap } from "lucide-react";
+import officeTeam from "@/assets/sky-designers-office-team.png";
+import SectionHeading from "@/components/common/SectionHeading";
+import { company } from "@/data/siteData";
+import { MOTION } from "@/lib/motion";
+import ImageReveal from "@/components/motion/ImageReveal";
+import ParallaxMedia from "@/components/motion/ParallaxMedia";
 
-const AboutSection = () => {
-  return (
-    <section id="about" className="py-20 relative">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8"
-        >
-          <p className="text-sky-400 text-sm font-medium tracking-widest uppercase mb-3">About</p>
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-white">About Sky Designers</h2>
-        </motion.div>
+const points = [
+  {
+    icon: Lightbulb,
+    title: "Ideas with purpose",
+    text: "Creative decisions shaped around your goals, audience, and offer.",
+  },
+  {
+    icon: Zap,
+    title: "Fast, focused execution",
+    text: "A connected team that moves from strategy to delivery without unnecessary complexity.",
+  },
+  {
+    icon: Globe2,
+    title: "Built for digital",
+    text: "Content and experiences designed for the platforms your customers use every day.",
+  },
+];
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto bg-background/80 border border-border rounded-2xl p-8 md:p-12 shadow-lg"
-        >
-          <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-            <div className="flex-1">
-              <p className="text-muted-foreground text-base leading-relaxed">
-                At Sky Designers, we are more than just a marketing agency; we are your growth partners. Based in Sri Lanka, we specialize in helping businesses dominate the digital landscape through data-driven Meta Ads, creative content production, and cutting-edge WhatsApp marketing solutions. Our mission is to transform your brand's vision into measurable success.
-              </p>
-
-              <div className="mt-6 flex items-center gap-4">
-                <span className="inline-block text-xs font-semibold text-foreground bg-muted/10 px-3 py-1 rounded-full">Registered Marketing Agency – Sri Lanka</span>
-                <span className="text-muted-foreground text-sm">Business Registration: <span className="font-medium text-foreground">WP/GAM/WT/2024/00244</span></span>
+const AboutSection = () => (
+  <section id="about" className="section-space overflow-hidden bg-white">
+    <div className="site-container">
+      <div className="grid items-center gap-14 lg:grid-cols-[.92fr_1.08fr] lg:gap-20">
+        <div className="relative">
+          <ImageReveal className="rounded-[30px] shadow-[0_35px_90px_rgba(15,23,42,.14)]">
+            <div className="relative overflow-hidden rounded-[30px] bg-slate-100 p-3">
+              <ParallaxMedia distance={12} className="-my-3">
+                <img
+                  src={officeTeam}
+                  alt="Sky Designers team working together in the office"
+                  className="aspect-[4/3] w-full scale-[1.03] rounded-[23px] object-cover object-center sm:aspect-[16/10] lg:aspect-[4/4.6]"
+                />
+              </ParallaxMedia>
+              <div className="absolute inset-x-3 bottom-3 rounded-b-[23px] bg-gradient-to-t from-slate-950/85 to-transparent px-7 pb-7 pt-24 text-white">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-300">
+                  Registered Sri Lankan agency
+                </p>
+                <p className="mt-2 text-sm text-slate-200">
+                  Business Registration: {company.registration}
+                </p>
               </div>
             </div>
-
-            <div className="mt-6 md:mt-0 md:w-44 md:flex-shrink-0 text-center">
-              <div className="inline-block w-36 h-36 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/5 flex items-center justify-center border border-border">
-                <span className="text-sm font-heading font-semibold text-foreground">Sky Designers</span>
-              </div>
-            </div>
+          </ImageReveal>
+          <div className="absolute -right-5 top-8 hidden w-48 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:block">
+            <BadgeCheck className="h-7 w-7 text-primary" />
+            <p className="mt-4 font-heading text-lg font-bold text-slate-950">
+              Your growth partner
+            </p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Strategy, creative, media, and technology in one team.
+            </p>
           </div>
-        </motion.div>
+        </div>
+
+        <div>
+          <SectionHeading
+            eyebrow="Who we are"
+            title="A creative growth team for brands ready to be seen differently."
+            description="Sky Designers is a Sri Lankan digital marketing and creative agency. We bring strategy, advertising, design, content, and web development together to help businesses communicate clearly and grow with confidence."
+          />
+
+          <div className="mt-9 grid gap-5">
+            {points.map(({ icon: Icon, title, text }, index) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: index * MOTION.stagger,
+                  duration: MOTION.reveal,
+                  ease: MOTION.ease,
+                }}
+                className="premium-card group flex gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-5 hover:border-blue-200 hover:bg-white hover:shadow-lg"
+              >
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary transition group-hover:scale-105 group-hover:bg-primary group-hover:text-white">
+                  <Icon size={20} />
+                </div>
+                <div>
+                  <h3 className="font-heading text-base font-bold text-slate-950">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <a
+            href="#services"
+            className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold text-primary transition hover:gap-3"
+          >
+            Explore our capabilities <ArrowUpRight size={17} />
+          </a>
+        </div>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default AboutSection;

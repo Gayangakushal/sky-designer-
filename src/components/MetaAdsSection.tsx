@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ArrowRight, MessageCircle, PhoneCall, ShieldCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCompany } from "@/hooks/useCompany";
 
 const initialPackages = [
   {
@@ -99,7 +100,7 @@ const MetaAdsSection = ({ packages: externalPackages }: PackagesSectionProps) =>
     setActiveTier("");
   };
 
-  const phoneNumber = "+94779507298";
+  const { phone: phoneNumber } = useCompany();
   const whatsappMessage = encodeURIComponent(`Hi, I'm interested in the ${activeTier} package.`);
 
   return (

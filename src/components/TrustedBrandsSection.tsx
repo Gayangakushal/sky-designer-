@@ -1,79 +1,64 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { trustedBrands } from "@/data/trustedBrands";
+import { MOTION } from "@/lib/motion";
 
-
-import logoWhatsapp1 from "@/assets/logos/whatsapp1.jpg";
-import logoWhatsapp2 from "@/assets/logos/whatsapp2.jpg";
-import logoWhatsapp3 from "@/assets/logos/whatsapp3.jpg";
-import logoFb1 from "@/assets/logos/fb1.jpg";
-import logoFb2 from "@/assets/logos/fb2.jpg";
-import logoFb3 from "@/assets/logos/fb3.jpg";
-import logoFb4 from "@/assets/logos/fb4.jpg";
-import logoFb5 from "@/assets/logos/fb5.jpg";
-import logoFb6 from "@/assets/logos/fb6.jpg";
-import logoFb7 from "@/assets/logos/fb7.jpg";
-import logoFb8 from "@/assets/logos/fb8.jpg";
-import logoFb9 from "@/assets/logos/fb9.jpg";
-import logoFb10 from "@/assets/logos/fb10.jpg";
-import logoFb11 from "@/assets/logos/fb11.jpg";
-import logoFb12 from "@/assets/logos/fb12.jpg";
-import logoFb13 from "@/assets/logos/fb13.jpg";
-import logoFb14 from "@/assets/logos/fb14.jpg";
-
-const logos = [
-  { src: logoWhatsapp1, alt: "Trusted Brand 1" },
-  { src: logoWhatsapp2, alt: "Trusted Brand 2" },
-  { src: logoWhatsapp3, alt: "Trusted Brand 3" },
-  { src: logoFb1, alt: "Trusted Brand 4" },
-  { src: logoFb2, alt: "Trusted Brand 5" },
-  { src: logoFb3, alt: "Trusted Brand 6" },
-  { src: logoFb4, alt: "Trusted Brand 7" },
-  { src: logoFb5, alt: "Trusted Brand 8" },
-  { src: logoFb6, alt: "Trusted Brand 9" },
-  { src: logoFb7, alt: "Trusted Brand 10" },
-  { src: logoFb8, alt: "Trusted Brand 11" },
-  { src: logoFb9, alt: "Trusted Brand 12" },
-  { src: logoFb10, alt: "Trusted Brand 13" },
-  { src: logoFb11, alt: "Trusted Brand 14" },
-  { src: logoFb12, alt: "Trusted Brand 15" },
-  { src: logoFb13, alt: "Trusted Brand 16" },
-  { src: logoFb14, alt: "Trusted Brand 17" },
-];
+const LogoGroup = ({ duplicate = false }: { duplicate?: boolean }) => (
+  <div className="brand-marquee-group" aria-hidden={duplicate || undefined}>
+    {trustedBrands.map((brand) => (
+      <div
+        key={`${duplicate ? "duplicate-" : ""}${brand.name}`}
+        className="brand-marquee-item"
+        tabIndex={duplicate ? -1 : 0}
+        aria-label={duplicate ? undefined : brand.alt}
+      >
+        <img
+          src={brand.logo}
+          alt={duplicate ? "" : brand.alt}
+          loading="lazy"
+          decoding="async"
+          className="brand-logo-image w-full object-contain"
+        />
+      </div>
+    ))}
+  </div>
+);
 
 const TrustedBrandsSection = () => {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="py-16 relative overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10"
-      >
-        <p className="text-muted-foreground text-sm font-medium tracking-wide">
-          Trusted by <span className="text-foreground font-bold">500+</span> Global Brands{" "}
-          <span className="text-muted-foreground">(and counting)</span>
-        </p>
-      </motion.div>
+    <section
+      aria-labelledby="trusted-brands-heading"
+      className="trusted-brands-section relative overflow-hidden border-y border-white/8 py-[72px] text-white sm:py-20"
+    >
+      <div
+        className="trusted-brands-grid pointer-events-none absolute inset-0"
+        aria-hidden="true"
+      />
+      <div className="site-container relative mb-10 sm:mb-12">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: reduceMotion ? 0 : MOTION.reveal, ease: MOTION.ease }}
+        >
+          <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-blue-300">
+            <span className="h-px w-8 bg-blue-400" aria-hidden="true" />
+            Selected clients
+          </p>
+          <h2
+            id="trusted-brands-heading"
+            className="mt-3 font-heading text-2xl font-bold tracking-[-0.03em] sm:text-3xl"
+          >
+            Brands that trusted our team.
+          </h2>
+        </motion.div>
+      </div>
 
-      {/* Scrolling marquee */}
-      <div className="relative">
-        {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10" />
-
-        <div className="flex animate-marquee gap-16 items-center">
-          {[...logos, ...logos].map((logo, i) => (
-            <div
-              key={`${logo.alt}-${i}`}
-              className="flex-shrink-0 w-28 h-28 rounded-full overflow-hidden bg-card border border-border flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity"
-            >
-              <img
-                src={logo.src}
-                alt={logo.alt}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-          ))}
+      <div className="brand-marquee relative" aria-label="Trusted client brands">
+        <div className="brand-marquee-track">
+          <LogoGroup />
+          <LogoGroup duplicate />
         </div>
       </div>
     </section>

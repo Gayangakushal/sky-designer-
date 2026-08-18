@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
+import SectionHeading from "@/components/common/SectionHeading";
 
 const ReviewsSection = () => {
   useEffect(() => {
     const scriptId = "elfsight-platform-script";
-
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
       script.id = scriptId;
@@ -15,21 +15,12 @@ const ReviewsSection = () => {
   }, []);
 
   return (
-    <section id="reviews" className="relative bg-[#020520] py-24">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16 text-center"
-        >
-          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-sky-400">Testimonials</p>
-          <h2 className="font-heading text-3xl font-bold text-white md:text-5xl">What Clients Say</h2>
-        </motion.div>
-
-        <div className="mb-8">
+    <section id="reviews" className="section-space bg-slate-50">
+      <div className="site-container">
+        <SectionHeading eyebrow="Client feedback" title="The experience matters as much as the final result." description="Live reviews are loaded from the review widget already connected to this project." align="center" />
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-12 overflow-hidden rounded-[24px] border border-slate-200 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,.07)] sm:p-8">
           <div className="elfsight-app-3bd68d52-54ac-44cc-a497-acd3ab5cb73f" />
-        </div>
+        </motion.div>
       </div>
     </section>
   );

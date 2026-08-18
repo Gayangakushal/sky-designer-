@@ -1,0 +1,6 @@
+ALTER TABLE public.pricing_packages ADD COLUMN features TEXT[] NOT NULL DEFAULT '{}';
+
+UPDATE public.pricing_packages SET features = ARRAY['Up to 08 monthly creatives','Kick-off strategy call','Meta Pixel integration','Meta Ads management'] WHERE slug = 'standard';
+UPDATE public.pricing_packages SET features = ARRAY['Up to 13 monthly creatives','Meta and TikTok Ads','Competitor and audience analysis','Conversions API integration','PDF performance report'] WHERE slug = 'premium';
+UPDATE public.pricing_packages SET features = ARRAY['15+ premium creative assets','Meta, TikTok and Google Ads','Monthly professional product shoot','Advanced tracking and analytics','Live performance dashboard','Monthly strategy call'] WHERE slug = 'platinum';
+UPDATE public.pricing_packages SET features = ARRAY['Daily creative output','Unlimited active campaigns','Full omnichannel ads management','Website CRO and lead generation','Live performance dashboard','VIP community management'] WHERE slug = 'corporate';

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 
 import design1 from "@/assets/gallery/design-1.jpg";

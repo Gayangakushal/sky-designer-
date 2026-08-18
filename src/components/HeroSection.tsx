@@ -1,108 +1,185 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import officeBg from "@/assets/d.png";
-
-const phrases = [
-  "Full-Service Digital Marketing Agency",
-  "We Grow Your Brand Online",
-  "Results-Driven Strategies",
-];
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { MOTION } from "@/lib/motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
-  const [currentPhrase, setCurrentPhrase] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const phrase = phrases[currentPhrase];
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          setDisplayText(phrase.slice(0, displayText.length + 1));
-          if (displayText.length === phrase.length) {
-            setTimeout(() => setIsDeleting(true), 2000);
-          }
-        } else {
-          setDisplayText(phrase.slice(0, displayText.length - 1));
-          if (displayText.length === 0) {
-            setIsDeleting(false);
-            setCurrentPhrase((prev) => (prev + 1) % phrases.length);
-          }
-        }
-      },
-      isDeleting ? 40 : 80
-    );
-    return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentPhrase]);
-
-  
+  const heroRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const firstLineX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["0vw", reduceMotion ? "0vw" : isMobile ? "-18vw" : "-35vw"],
+  );
+  const secondLineX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["0vw", reduceMotion ? "0vw" : isMobile ? "18vw" : "35vw"],
+  );
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <img src={officeBg} alt="" className="w-full h-full object-cover scale-[1.02] blur-[3px]" />
-        <div className="absolute inset-0 bg-slate-950/50" />
-        <div className="absolute inset-0 bg-blue-950/35 mix-blend-screen" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_42%),linear-gradient(180deg,rgba(2,6,23,0.18)_0%,rgba(2,6,23,0.58)_100%)]" />
+    <section
+      ref={heroRef}
+      id="home"
+      aria-labelledby="hero-heading"
+      className="relative isolate flex min-h-[92svh] overflow-hidden bg-[#020713] text-white lg:min-h-[100svh]"
+    >
+      <div className="absolute inset-0 z-[0]" aria-hidden="true">
+        <video
+          className="absolute inset-0 z-[0] h-full w-full object-cover object-center"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          tabIndex={-1}
+          onCanPlay={(event) => void event.currentTarget.play()}
+          onEnded={(event) => void event.currentTarget.play()}
+          aria-hidden="true"
+        >
+          <source src="/videos/hero-background-fast.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(3,12,31,.68)_0%,rgba(5,22,52,.72)_55%,rgba(4,15,36,.82)_100%)]" />
+        <div className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_50%_45%,rgba(22,119,255,.12),transparent_55%)]" />
+        <div className="absolute inset-x-0 bottom-0 z-[1] h-40 bg-gradient-to-t from-[#020713] to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10 text-center pt-20">
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-sky-400 font-medium text-sm tracking-widest uppercase mb-6"
-        >
-          Welcome to Sky Designers
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold mb-6 min-h-[1.2em]"
-        >
-          <span className="text-white">{displayText}</span>
-          <span className="animate-pulse text-white">|</span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10"
-        >
-          We craft data-driven strategies that transform brands and deliver measurable growth across every digital channel.
-        </motion.p>
-
+      <div className="site-container relative z-[2] flex flex-1 items-center justify-center pb-20 pt-32 sm:pt-36 lg:pb-24 lg:pt-40">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          initial={reduceMotion ? false : "hidden"}
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                delayChildren: 0.12,
+                staggerChildren: reduceMotion ? 0 : 0.12,
+              },
+            },
+          }}
+          className="mx-auto flex w-full max-w-5xl flex-col items-center text-center"
         >
-          <Button onClick={onBookCall} size="lg" className="bg-primary hover:bg-primary/90 text-white glow-primary text-base px-8">
-            Book a Call
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-border text-foreground hover:bg-secondary text-base px-8"
-            onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 14 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: reduceMotion ? 0 : MOTION.reveal, ease: MOTION.ease }}
+            className="inline-flex items-center gap-3 text-[0.65rem] font-extrabold uppercase tracking-[0.3em] text-blue-300 sm:text-xs"
           >
-            View Services
-          </Button>
-        </motion.div>
+            <span className="h-px w-8 bg-gradient-to-r from-transparent to-blue-400" />
+            Welcome to Sky Designers
+            <span className="h-px w-8 bg-gradient-to-l from-transparent to-blue-400" />
+          </motion.div>
 
+          <motion.h1
+            id="hero-heading"
+            variants={{
+              hidden: { opacity: 0, y: 24 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: reduceMotion ? 0 : MOTION.cinematic, ease: MOTION.ease }}
+            className="mt-7 max-w-5xl text-balance font-heading text-[2.65rem] font-extrabold leading-[1.02] tracking-[-0.055em] text-white drop-shadow-[0_8px_32px_rgba(0,0,0,.35)] sm:text-6xl lg:text-[clamp(4.5rem,6.5vw,6.5rem)]"
+          >
+            <motion.span className="block" style={{ x: firstLineX }}>
+              Full-Service Digital
+            </motion.span>
+            <motion.span
+              className="mt-1 block bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(79,157,255,.12)]"
+              style={{
+                x: secondLineX,
+                backgroundImage:
+                  "linear-gradient(90deg, #ffffff 0%, #dcecff 25%, #9dcbff 50%, #4f9dff 70%, #dcecff 90%, #ffffff 100%)",
+                backgroundSize: "200% 100%",
+                WebkitBackgroundClip: "text",
+              }}
+              animate={
+                reduceMotion
+                  ? { backgroundPosition: "0% 50%" }
+                  : { backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }
+              }
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 7, ease: "easeInOut", repeat: Infinity }
+              }
+            >
+              Growth Partner
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            variants={{
+              hidden: { opacity: 0, y: 18 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: reduceMotion ? 0 : MOTION.reveal, ease: MOTION.ease }}
+            className="mt-7 max-w-2xl text-balance text-sm leading-7 text-slate-200/85 sm:text-lg sm:leading-8"
+          >
+            We craft data-driven strategies that transform brands and deliver measurable growth
+            across every digital channel.
+          </motion.p>
+
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 18 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: reduceMotion ? 0 : MOTION.reveal, ease: MOTION.ease }}
+            className="mt-9 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center"
+          >
+            <button
+              type="button"
+              onClick={onBookCall}
+              className="button-shine group inline-flex min-h-14 items-center justify-center gap-3 rounded-xl bg-[#0a6cff] px-8 text-sm font-extrabold text-white shadow-[0_16px_45px_rgba(10,108,255,.38)] transition duration-300 hover:-translate-y-1 hover:bg-[#1980ff] hover:shadow-[0_20px_55px_rgba(10,108,255,.52)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020713]"
+            >
+              Book a Call
+              <ArrowRight
+                size={17}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </button>
+            <a
+              href="#services"
+              className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-xl border border-white/30 bg-[#031023]/55 px-8 text-sm font-extrabold text-white shadow-[0_14px_40px_rgba(0,0,0,.2)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-300/65 hover:bg-white/[0.1] hover:text-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020713]"
+            >
+              View Services
+              <ArrowRight
+                size={17}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+          </motion.div>
+        </motion.div>
       </div>
+
+      <motion.a
+        href="#services"
+        aria-label="Scroll to services"
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: reduceMotion ? 0 : 1.1, duration: 0.6 }}
+        className="absolute bottom-7 left-1/2 z-[2] hidden -translate-x-1/2 flex-col items-center gap-2 text-[0.55rem] font-bold uppercase tracking-[0.24em] text-white/45 transition-colors hover:text-blue-300 sm:flex"
+      >
+        Explore
+        <span className="relative h-10 w-px overflow-hidden bg-white/15">
+          <motion.span
+            animate={reduceMotion ? undefined : { y: ["-100%", "200%"] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-transparent to-blue-300"
+          />
+        </span>
+      </motion.a>
     </section>
   );
 };
 
-<<<<<<< HEAD
 export default HeroSection;
-=======
-export default HeroSection;
->>>>>>> 8fb200d5854998cc504ce09f702283fa8feb1f4e
