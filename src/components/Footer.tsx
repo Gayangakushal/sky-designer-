@@ -1,8 +1,31 @@
-import { ArrowUpRight, Facebook, Instagram, Mail, Phone, Youtube } from "lucide-react";
+import {
+  ArrowUpRight,
+  AtSign,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  Youtube,
+  type LucideProps,
+} from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { services } from "@/data/siteData";
 import { useCompany } from "@/hooks/useCompany";
 import MotionReveal from "./MotionReveal";
+
+const TikTokIcon = ({ size = 17, ...props }: LucideProps) => (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-2-2.75v-3.5a6.33 6.33 0 1 0 5.45 6.25V8.73a8.2 8.2 0 0 0 4.77 1.52V6.81c-.34 0-.67-.04-1-.12Z" />
+  </svg>
+);
 
 const Footer = () => {
   const company = useCompany();
@@ -32,19 +55,22 @@ const Footer = () => {
                 A Sri Lankan creative and digital marketing agency connecting strategy, content,
                 advertising, design, and web development.
               </p>
-              <div className="mt-6 flex gap-2">
+              <div className="mt-6 flex flex-wrap gap-2">
                 {[
-                  { icon: Facebook, href: "#", label: "Facebook" },
-                  { icon: Instagram, href: "#", label: "Instagram" },
+                  { icon: Facebook, href: company.facebook, label: "Facebook" },
+                  { icon: Instagram, href: company.instagram, label: "Instagram" },
+                  { icon: Linkedin, href: company.linkedin, label: "LinkedIn" },
+                  { icon: AtSign, href: company.threads, label: "Threads" },
+                  { icon: TikTokIcon, href: company.tiktok, label: "TikTok" },
                   { icon: Youtube, href: company.youtube, label: "YouTube" },
                 ].map(({ icon: Icon, href, label }) => (
                   <a
                     key={label}
                     href={href}
-                    target={href.startsWith("http") ? "_blank" : undefined}
-                    rel="noreferrer"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={label}
-                    className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:-translate-y-1 hover:border-blue-400/40 hover:bg-primary hover:text-white"
+                    className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-blue-400/40 hover:bg-primary hover:text-white hover:shadow-[0_6px_18px_rgba(37,99,235,0.22)]"
                   >
                     <Icon size={17} />
                   </a>
