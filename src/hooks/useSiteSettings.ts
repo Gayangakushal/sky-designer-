@@ -10,20 +10,33 @@ export function useSiteSettings() {
 
   useEffect(() => {
     let active = true;
-    supabase
-      .from("site_settings")
-      .select("setting_key,setting_value")
-      .then(({ data }) => {
-        if (!active) return;
-        const map: SettingsMap = {};
-        for (const row of data ?? []) {
-          map[row.setting_key] = (row.setting_value ?? {}) as Record<string, string>;
-        }
-        setSettings(map);
-        setLoading(false);
-      });
+    const load = () =>
+      supabase
+        .from("site_settings")
+        .select("setting_key,setting_value")
+        .then(({ data }) => {
+          if (!active) return;
+          const map: SettingsMap = {};
+          for (const row of data ?? []) {
+            map[row.setting_key] = (row.setting_value ?? {}) as Record<string, string>;
+          }
+          setSettings(map);
+          setLoading(false);
+        });
+
+    void load();
+    const channel = supabase
+      .channel(`public-site-settings-${crypto.randomUUID()}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_settings" },
+        () => void load(),
+      )
+      .subscribe();
+
     return () => {
       active = false;
+      void supabase.removeChannel(channel);
     };
   }, []);
 

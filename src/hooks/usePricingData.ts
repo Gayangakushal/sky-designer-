@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { pricingPackages as fallbackPackages, type PricingPackage } from "@/data/pricingPackages";
-import { pricingComparison as fallbackComparison, type ComparisonCategory, type ComparisonValue } from "@/data/pricingComparison";
+import {
+  pricingComparison as fallbackComparison,
+  type ComparisonCategory,
+  type ComparisonValue,
+} from "@/data/pricingComparison";
 
 const formatPrice = (value: number) => new Intl.NumberFormat("en-US").format(value);
 
@@ -54,7 +58,7 @@ export function usePricingData() {
                   name: f.label,
                   values: dbPackages.map((p) => {
                     const v = values.find((x) => x.feature_id === f.id && x.package_id === p.id);
-                    if (!v) return false;
+                    if (!v) return p.slug === "custom" ? "Tailored" : false;
                     return (v.display_value ?? v.included ?? false) as ComparisonValue;
                   }) as ComparisonCategory["features"][number]["values"],
                 })),

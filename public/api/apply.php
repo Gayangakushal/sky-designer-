@@ -93,7 +93,7 @@ if ($fileContents === false) {
     respond(500, false, 'The uploaded file could not be read.');
 }
 
-$recipient = getenv('CAREERS_EMAIL') ?: 'Info@jsskydesigners.com';
+$recipient = getenv('CAREERS_EMAIL') ?: 'Info@skyDesigners.lk';
 $fromEmail = getenv('CAREERS_FROM_EMAIL') ?: 'no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
 $fromName = getenv('CAREERS_FROM_NAME') ?: 'Sky Designers Careers';
 $recipient = safe_header($recipient);

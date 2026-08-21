@@ -3,11 +3,20 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { ArrowRight } from "lucide-react";
 import { MOTION } from "@/lib/motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
   const heroRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const isMobile = useIsMobile();
+  const { settings } = useSiteSettings();
+  const heroSettings = settings["hero"] ?? {};
+  const headingWords = (heroSettings["heading"] || "Full-Service Digital Growth Partner")
+    .trim()
+    .split(/\s+/);
+  const headingSplit = Math.ceil(headingWords.length / 2);
+  const headingLineOne = headingWords.slice(0, headingSplit).join(" ");
+  const headingLineTwo = headingWords.slice(headingSplit).join(" ");
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -74,7 +83,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
             className="inline-flex items-center gap-3 text-[0.65rem] font-extrabold uppercase tracking-[0.3em] text-blue-300 sm:text-xs"
           >
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-blue-400" />
-            Welcome to Sky Designers
+            {heroSettings["badge"] || "Welcome to Sky Designers"}
             <span className="h-px w-8 bg-gradient-to-l from-transparent to-blue-400" />
           </motion.div>
 
@@ -88,7 +97,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
             className="mt-7 max-w-5xl text-balance font-heading text-[2.65rem] font-extrabold leading-[1.02] tracking-[-0.055em] text-white drop-shadow-[0_8px_32px_rgba(0,0,0,.35)] sm:text-6xl lg:text-[clamp(4.5rem,6.5vw,6.5rem)]"
           >
             <motion.span className="block" style={{ x: firstLineX }}>
-              Full-Service Digital
+              {headingLineOne}
             </motion.span>
             <motion.span
               className="mt-1 block bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(79,157,255,.12)]"
@@ -110,7 +119,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
                   : { duration: 7, ease: "easeInOut", repeat: Infinity }
               }
             >
-              Growth Partner
+              {headingLineTwo}
             </motion.span>
           </motion.h1>
 
@@ -122,8 +131,8 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
             transition={{ duration: reduceMotion ? 0 : MOTION.reveal, ease: MOTION.ease }}
             className="mt-7 max-w-2xl text-balance text-sm leading-7 text-slate-200/85 sm:text-lg sm:leading-8"
           >
-            We craft data-driven strategies that transform brands and deliver measurable growth
-            across every digital channel.
+            {heroSettings["description"] ||
+              "We craft data-driven strategies that transform brands and deliver measurable growth across every digital channel."}
           </motion.p>
 
           <motion.div

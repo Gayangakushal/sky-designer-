@@ -32,7 +32,7 @@ const PackageComparison = ({
   onSelectPackage: (packageName: string) => void;
 }) => {
   const { packages: pricingPackages, comparison: pricingComparison } = usePricingData();
-  const comparisonPackages = pricingPackages.filter((pricingPackage) => !pricingPackage.isCustom);
+  const comparisonPackages = pricingPackages;
 
   return (
     <div className="mt-24 sm:mt-28" aria-labelledby="comparison-heading">
@@ -61,16 +61,18 @@ const PackageComparison = ({
           id="comparison-scroll-hint"
           className="border-b border-white/10 px-5 py-3 text-xs font-semibold text-[#8fa1bd] lg:hidden"
         >
-          Swipe horizontally to compare every plan.
+          Swipe to compare plans →
         </p>
         <div
           className="max-w-full overflow-x-auto overscroll-x-contain rounded-b-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-300 lg:rounded-[24px]"
+          style={{ WebkitOverflowScrolling: "touch" }}
           tabIndex={0}
           aria-describedby="comparison-scroll-hint"
         >
-          <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-sm">
+          <table className="w-full min-w-[1235px] border-separate border-spacing-0 text-sm">
             <caption className="sr-only">
-              Detailed comparison of Standard, Premium, Platinum, and Corporate investment packages.
+              Detailed comparison of Standard, Premium, Platinum, Corporate, and Custom investment
+              packages.
             </caption>
             <thead>
               <tr>
@@ -96,7 +98,9 @@ const PackageComparison = ({
                         {pricingPackage.category}
                       </span>
                       <span className="mt-2 text-xs font-semibold text-[#8fa1bd]">
-                        LKR {pricingPackage.price} / mo
+                        {pricingPackage.isCustom
+                          ? "Tailored quote"
+                          : `LKR ${pricingPackage.price} / mo`}
                       </span>
                       <button
                         type="button"
@@ -114,7 +118,7 @@ const PackageComparison = ({
               <tbody key={category.name}>
                 <tr>
                   <th
-                    colSpan={5}
+                    colSpan={comparisonPackages.length + 1}
                     scope="colgroup"
                     className="border-b border-white/10 bg-[#0a1630] px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-[0.18em] text-blue-300"
                   >
@@ -132,13 +136,18 @@ const PackageComparison = ({
                     >
                       {feature.name}
                     </th>
-                    {feature.values.slice(0, comparisonPackages.length).map((value, valueIndex) => (
+                    {comparisonPackages.map((pricingPackage, valueIndex) => (
                       <td
                         key={`${feature.name}-${valueIndex}`}
-                        className={`border-b border-r border-white/10 px-4 py-4 text-center font-semibold leading-5 text-[#aebbd0] last:border-r-0 ${valueIndex === 2 ? "bg-[rgba(22,119,255,.08)] shadow-[inset_1px_0_rgba(74,141,255,.16),inset_-1px_0_rgba(74,141,255,.16)]" : ""}`}
+                        className={`border-b border-r border-white/10 px-4 py-4 text-center font-semibold leading-5 text-[#aebbd0] last:border-r-0 ${pricingPackage.featured ? "bg-[rgba(22,119,255,.08)] shadow-[inset_1px_0_rgba(74,141,255,.16),inset_-1px_0_rgba(74,141,255,.16)]" : ""}`}
                       >
                         <span className="inline-flex min-h-6 items-center justify-center">
-                          <ComparisonValueCell value={value} />
+                          <ComparisonValueCell
+                            value={
+                              feature.values[valueIndex] ??
+                              (pricingPackage.isCustom ? "Tailored" : false)
+                            }
+                          />
                         </span>
                       </td>
                     ))}
@@ -284,7 +293,9 @@ const PricingCard = ({
 
       {isCustom ? (
         <div className="relative mt-8 text-center">
-          <p className="text-xs leading-5 text-[#8fa1bd]">Let’s build a package around your goals.</p>
+          <p className="text-xs leading-5 text-[#8fa1bd]">
+            Let’s build a package around your goals.
+          </p>
           <a
             href="tel:+94779507298"
             className="mt-2 inline-flex min-h-11 items-center justify-center px-3 text-sm font-bold text-blue-200 transition hover:text-white"

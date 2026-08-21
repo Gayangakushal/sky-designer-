@@ -16,7 +16,10 @@ export const BLOG_API_URL = (
 type JsonObject = Record<string, unknown>;
 
 export class BlogApiError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = "BlogApiError";
   }
@@ -50,7 +53,8 @@ function normalizeCategory(value: unknown): BlogCategory {
 export function normalizeBlogPost(value: unknown): BlogPost {
   const post = asObject(value);
   const nestedCategory = post.category ? normalizeCategory(post.category) : null;
-  const status: BlogStatus = asString(post.status).toLowerCase() === "published" ? "published" : "draft";
+  const status: BlogStatus =
+    asString(post.status).toLowerCase() === "published" ? "published" : "draft";
   return {
     id: asNumber(post.id),
     category_id: asNumber(post.category_id ?? nestedCategory?.id),
@@ -85,7 +89,10 @@ async function requestJson(path: string, init?: RequestInit): Promise<JsonObject
     throw new BlogApiError("The blog service returned an invalid response.", response.status);
   }
   if (!response.ok || payload.success === false) {
-    throw new BlogApiError(asString(payload.message, "The blog service could not complete the request."), response.status);
+    throw new BlogApiError(
+      asString(payload.message, "The blog service could not complete the request."),
+      response.status,
+    );
   }
   return payload;
 }
@@ -98,7 +105,9 @@ export async function fetchPublishedPosts(): Promise<BlogPostListResponse> {
 
 export async function fetchBlogCategories(): Promise<BlogCategoriesResponse> {
   const payload = await requestJson("categories.php");
-  const categories = Array.isArray(payload.categories) ? payload.categories.map(normalizeCategory) : [];
+  const categories = Array.isArray(payload.categories)
+    ? payload.categories.map(normalizeCategory)
+    : [];
   return { success: true, categories };
 }
 
@@ -108,8 +117,11 @@ export async function fetchPostBySlug(slug: string): Promise<BlogPostResponse> {
 }
 
 async function adminRequest(path: string, init?: RequestInit): Promise<JsonObject> {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.access_token) throw new BlogApiError("Your admin session has expired. Please sign in again.", 401);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token)
+    throw new BlogApiError("Your admin session has expired. Please sign in again.", 401);
   return requestJson(`admin/${path}`, {
     ...init,
     headers: {
@@ -131,7 +143,10 @@ export async function createBlogPost(input: BlogPostInput): Promise<BlogPost> {
 }
 
 export async function updateBlogPost(id: number, input: BlogPostInput): Promise<BlogPost> {
-  const payload = await adminRequest("update.php", { method: "PATCH", body: JSON.stringify({ id, ...input }) });
+  const payload = await adminRequest("update.php", {
+    method: "PATCH",
+    body: JSON.stringify({ id, ...input }),
+  });
   return normalizeBlogPost(payload.post);
 }
 
@@ -142,29 +157,31 @@ export async function deleteBlogPost(id: number): Promise<void> {
 export const getPostCategoryName = (post: BlogPost) =>
   post.category?.name || post.category_name || "Insights";
 
-export const getBlogImageUrl = (image: string | null) => {
-  if (!image) return null;
-  if (/^https?:\/\//i.test(image)) return image;
-  return `${BLOG_API_URL}/${image.replace(/^\//, "")}`;
-};
-
 export const formatBlogDate = (date: string | null | undefined) => {
   if (!date) return "Not published";
   const parsed = new Date(date.replace(" ", "T"));
   return Number.isNaN(parsed.getTime())
     ? date
-    : new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(parsed);
+    : new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(
+        parsed,
+      );
 };
 
 export const sanitizeBlogHtml = (html: string) => {
   if (typeof window === "undefined") return html;
   const documentNode = new DOMParser().parseFromString(html, "text/html");
-  documentNode.querySelectorAll("script, style, iframe, object, embed, form").forEach((node) => node.remove());
+  documentNode
+    .querySelectorAll("script, style, iframe, object, embed, form")
+    .forEach((node) => node.remove());
   documentNode.querySelectorAll("*").forEach((node) => {
     for (const attribute of Array.from(node.attributes)) {
       const name = attribute.name.toLowerCase();
       const value = attribute.value.trim().toLowerCase();
-      if (name === "style" || name.startsWith("on") || ((name === "href" || name === "src") && value.startsWith("javascript:"))) {
+      if (
+        name === "style" ||
+        name.startsWith("on") ||
+        ((name === "href" || name === "src") && value.startsWith("javascript:"))
+      ) {
         node.removeAttribute(attribute.name);
       }
     }

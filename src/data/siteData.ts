@@ -37,9 +37,10 @@ import yasara from "@/assets/gallery/yasara.png";
 
 export const company = {
   name: "Sky Designers",
+  slogan: "Design Excellence Marketing Brilliance",
   phoneDisplay: "+94 77 950 7298",
   phone: "+94779507298",
-  email: "Info@jsskydesigners.com",
+  email: "Info@skyDesigners.lk",
   whatsapp: "https://wa.me/94779507298",
   registration: "WP/GAM/WT/2024/00244",
   location: "Sri Lanka",
@@ -170,11 +171,16 @@ export const founder = {
 };
 
 export const team = [
-  { name: "Jeewantha", role: "SALES EXECUTIVE | OPERATIONS MANAGER", image: jeewantha, sortOrder: 1 },
+  {
+    name: "Jeewantha",
+    role: "SALES EXECUTIVE | OPERATIONS MANAGER",
+    image: jeewantha,
+    sortOrder: 1,
+  },
   { name: "Ishara", role: "ADMINISTRATION & ACCOUNT MANAGER", image: ishara, sortOrder: 2 },
   { name: "Chathura", role: "DIGITAL MARKETING STRATEGIST", image: dila, sortOrder: 3 },
   { name: "Gayanga", role: "DIGITAL MARKETING & WEB EXECUTIVE", image: gayanga, sortOrder: 4 },
-  { name: "Dilashan", role: "ART DIRECTOR", image: dulara, sortOrder: 5 },
+  { name: "Dilshan", role: "ART DIRECTOR", image: dulara, sortOrder: 5 },
   { name: "Dulara", role: "PERFORMANCE MARKETER", image: chathura, sortOrder: 6 },
   { name: "Gimhani", role: "SOCIAL MEDIA ACCOUNT EXECUTIVE", image: assistant, sortOrder: 7 },
   { name: "Indrajith", role: "GRAPHIC DESIGNER", image: indrajith, sortOrder: 8 },

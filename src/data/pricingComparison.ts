@@ -2,7 +2,7 @@ export type ComparisonValue = boolean | string;
 
 export interface ComparisonFeature {
   name: string;
-  values: [ComparisonValue, ComparisonValue, ComparisonValue, ComparisonValue];
+  values: ComparisonValue[];
 }
 
 export interface ComparisonCategory {
@@ -33,7 +33,10 @@ export const pricingComparison: ComparisonCategory[] = [
   {
     name: "Content & Creative",
     features: [
-      { name: "Monthly Creative Output", values: ["Up to 08", "Up to 13", "15+ Premium Assets", "Daily Output"] },
+      {
+        name: "Monthly Creative Output",
+        values: ["Up to 08", "Up to 13", "15+ Premium Assets", "Daily Output"],
+      },
       { name: "Social Media Graphics", values: [true, true, true, true] },
       { name: "Short-Form Videos", values: [true, true, true, true] },
       { name: "Captions & Copywriting", values: [true, true, true, true] },
@@ -56,7 +59,10 @@ export const pricingComparison: ComparisonCategory[] = [
       { name: "Direct WhatsApp Support", values: [true, true, true, true] },
       { name: "Community Management", values: [false, "Basic", "Priority", "VIP"] },
       { name: "Monthly Strategy Call", values: [false, false, true, true] },
-      { name: "Performance Reporting", values: [false, "PDF Report", "Live Dashboard", "Live Dashboard"] },
+      {
+        name: "Performance Reporting",
+        values: [false, "PDF Report", "Live Dashboard", "Live Dashboard"],
+      },
     ],
   },
 ];

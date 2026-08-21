@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@/lib/router-compat";
-import { company } from "@/data/siteData";
+import { useCompany } from "@/hooks/useCompany";
 import { MOTION } from "@/lib/motion";
 
 const navItems = [
@@ -17,7 +17,7 @@ const navItems = [
   { label: "Contact", href: "/#contact" },
 ];
 
-const BrandMark = () => (
+const BrandMark = ({ slogan }: { slogan: string }) => (
   <div className="flex items-center gap-3">
     <div className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/15 bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,.12)]">
       <span className="absolute inset-0 bg-gradient-to-br from-[#3b82f6] via-[#176bff] to-[#075ddb]" />
@@ -28,14 +28,15 @@ const BrandMark = () => (
       <span className="block font-heading text-base font-extrabold tracking-[-0.03em] text-white">
         Sky Designers
       </span>
-      <span className="mt-1 block text-[9px] font-extrabold uppercase tracking-[0.22em] text-[#b0b8c5]">
-        Digital Growth Studio
+      <span className="mt-1 block max-w-[170px] text-[7px] font-extrabold uppercase leading-tight tracking-[0.12em] text-[#b0b8c5] sm:text-[8px]">
+        {slogan}
       </span>
     </div>
   </div>
 );
 
 const Navbar = ({ onBookCall }: { onBookCall: () => void }) => {
+  const company = useCompany();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -91,7 +92,7 @@ const Navbar = ({ onBookCall }: { onBookCall: () => void }) => {
             aria-label="Sky Designers home"
             className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06142b]"
           >
-            <BrandMark />
+            <BrandMark slogan={company.slogan} />
           </Link>
 
           <div className="hidden items-center gap-4 xl:gap-7 lg:flex">
