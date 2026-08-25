@@ -165,6 +165,8 @@ function RootShell({ children }: { children: ReactNode }) {
             style={{ display: "none" }}
             src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
             alt=""
+            role="presentation"
+            aria-hidden="true"
           />
         </noscript>
         {children}

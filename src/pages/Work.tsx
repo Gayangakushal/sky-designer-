@@ -41,6 +41,7 @@ const Work = () => {
             title="Our Latest Work"
             description="Explore the campaigns, designs, productions and digital experiences we create for brands."
             light
+            as="h1"
           />
 
           <div className="mt-10 flex flex-wrap gap-2">

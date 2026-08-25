@@ -6,6 +6,7 @@ interface SectionHeadingProps {
   description?: string;
   align?: "left" | "center";
   light?: boolean;
+  as?: "h1" | "h2";
 }
 
 const SectionHeading = ({
@@ -14,6 +15,7 @@ const SectionHeading = ({
   description,
   align = "left",
   light = false,
+  as = "h2",
 }: SectionHeadingProps) => (
   <div className={align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
     <div className={`mb-4 flex items-center gap-3 ${align === "center" ? "justify-center" : ""}`}>
@@ -21,7 +23,7 @@ const SectionHeading = ({
       <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">{eyebrow}</p>
     </div>
     <TextReveal
-      as="h2"
+      as={as}
       className={`text-balance font-heading text-3xl font-bold tracking-[-0.035em] sm:text-4xl lg:text-5xl ${light ? "text-white" : "text-slate-950"}`}
     >
       {title}
