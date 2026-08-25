@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { MotionConfig } from "framer-motion";
 
 import appCss from "../styles.css?url";
@@ -43,6 +43,8 @@ s.parentNode.insertBefore(t,s)}(window,document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','${META_PIXEL_ID}');
 fbq('track','PageView');`;
+
+const DEFERRED_ANALYTICS_SCRIPT = `(()=>{let started=false;window.dataLayer=window.dataLayer||[];const start=()=>{if(started)return;started=true;${GTM_SCRIPT}${META_PIXEL_SCRIPT}};const schedule=()=>{['pointerdown','keydown','touchstart','scroll'].forEach(e=>addEventListener(e,start,{once:true,passive:true}));setTimeout(start,7000)};document.readyState==='complete'?schedule():addEventListener('load',schedule,{once:true})})();`;
 
 function NotFoundComponent() {
   return (
@@ -118,11 +120,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap",
+        rel: "preload",
+        href: "/fonts/plus-jakarta-sans-latin-variable.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
@@ -142,8 +145,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: GTM_SCRIPT }} />
-        <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: DEFERRED_ANALYTICS_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
@@ -175,6 +177,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const initialPath = useRef(pathname);
   const isAdmin = pathname.startsWith("/admin");
 
   return (
@@ -192,7 +195,7 @@ function RootComponent() {
             <Outlet />
           ) : (
             <>
-              <PageTransition key={pathname}>
+              <PageTransition key={pathname} animateEntrance={initialPath.current !== pathname}>
                 <Outlet />
               </PageTransition>
               <FloatingContactActions />

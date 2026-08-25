@@ -7,7 +7,8 @@ export const publishedBlogPostsQuery = () =>
 export const blogPostQuery = (slug: string) =>
   queryOptions({ queryKey: ["blog", "post", slug], queryFn: () => fetchPostBySlug(slug).then((data) => data.post), staleTime: 30_000, refetchInterval: 60_000, refetchOnWindowFocus: true });
 
-export const usePublishedPosts = () => useQuery(publishedBlogPostsQuery());
+export const usePublishedPosts = (enabled = true) =>
+  useQuery({ ...publishedBlogPostsQuery(), enabled });
 
 export const useBlogPost = (slug: string) =>
   useQuery({ ...blogPostQuery(slug), enabled: Boolean(slug), retry: (count, error) => !(error instanceof Error && "confirmedNotFound" in error && error.confirmedNotFound === true) && count < 2 });

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Play } from "lucide-react";
-import workspaceImage from "@/assets/inside-sky-designers-workspace.jpeg";
+import workspaceImage from "@/assets/optimized/inside-sky-designers-workspace.webp";
 
 const WhoWeAreSection = () => (
   <section className="bg-white pb-20 sm:pb-24 lg:pb-32">
@@ -15,6 +15,10 @@ const WhoWeAreSection = () => (
         <img
           src={workspaceImage}
           alt="Sky Designers team working at their office desks"
+          width={1600}
+          height={1200}
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover object-[58%_center] sm:object-center"
         />
 

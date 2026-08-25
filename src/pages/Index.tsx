@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -14,8 +14,9 @@ import TeamSection from "@/components/TeamSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import CtaSection from "@/components/CtaSection";
 import LocationSection from "@/components/LocationSection";
-import BookingModal from "@/components/BookingModal";
 import Footer from "@/components/Footer";
+
+const BookingModal = lazy(() => import("@/components/BookingModal"));
 
 const Index = () => {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -46,11 +47,15 @@ const Index = () => {
         <LocationSection />
       </main>
       <Footer />
-      <BookingModal
-        isOpen={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-        selectedPackage={selectedPackage}
-      />
+      {bookingOpen && (
+        <Suspense fallback={null}>
+          <BookingModal
+            isOpen
+            onClose={() => setBookingOpen(false)}
+            selectedPackage={selectedPackage}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

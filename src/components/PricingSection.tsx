@@ -4,6 +4,7 @@ import { type PricingPackage } from "@/data/pricingPackages";
 import { type ComparisonValue } from "@/data/pricingComparison";
 import { usePricingData } from "@/hooks/usePricingData";
 import { company } from "@/data/siteData";
+import { useNearViewport } from "@/hooks/useNearViewport";
 
 const ComparisonValueCell = ({ value }: { value: ComparisonValue }) => {
   if (typeof value === "string") return <span>{value}</span>;
@@ -28,10 +29,12 @@ const ComparisonValueCell = ({ value }: { value: ComparisonValue }) => {
 
 const PackageComparison = ({
   onSelectPackage,
+  enabled,
 }: {
   onSelectPackage: (packageName: string) => void;
+  enabled: boolean;
 }) => {
-  const { packages: pricingPackages, comparison: pricingComparison } = usePricingData();
+  const { packages: pricingPackages, comparison: pricingComparison } = usePricingData(enabled);
   const comparisonPackages = pricingPackages;
 
   return (
@@ -333,10 +336,12 @@ const PricingSection = ({
   onSelectPackage: (packageName: string) => void;
 }) => {
   const reduceMotion = useReducedMotion();
-  const { packages: pricingPackages } = usePricingData();
+  const { ref, isNear } = useNearViewport<HTMLElement>();
+  const { packages: pricingPackages } = usePricingData(isNear);
 
   return (
     <section
+      ref={ref}
       id="pricing"
       aria-labelledby="pricing-heading"
       className="relative overflow-hidden bg-[#020817] py-24 text-white sm:py-28 lg:py-32"
@@ -382,7 +387,7 @@ const PricingSection = ({
           Ad spend is not included in the package fee.
         </p>
 
-        <PackageComparison onSelectPackage={onSelectPackage} />
+        <PackageComparison onSelectPackage={onSelectPackage} enabled={isNear} />
       </div>
     </section>
   );

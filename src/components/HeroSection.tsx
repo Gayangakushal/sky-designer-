@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { MOTION } from "@/lib/motion";
@@ -7,6 +7,8 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
   const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const reduceMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const { settings } = useSiteSettings();
@@ -24,13 +26,43 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
   const firstLineX = useTransform(
     scrollYProgress,
     [0, 1],
-    ["0vw", reduceMotion ? "0vw" : isMobile ? "-18vw" : "-35vw"],
+    ["0vw", reduceMotion || isMobile ? "0vw" : "-35vw"],
   );
   const secondLineX = useTransform(
     scrollYProgress,
     [0, 1],
-    ["0vw", reduceMotion ? "0vw" : isMobile ? "18vw" : "35vw"],
+    ["0vw", reduceMotion || isMobile ? "0vw" : "35vw"],
   );
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    let timerId: ReturnType<typeof globalThis.setTimeout> | undefined;
+    const activationEvents = ["pointerdown", "touchstart", "keydown", "scroll"] as const;
+    const startVideo = () => {
+      const video = videoRef.current;
+      if (!video || video.src) return;
+      video.src = window.matchMedia("(max-width: 767px)").matches
+        ? "/videos/hero-background-mobile.mp4"
+        : "/videos/hero-background-optimized.mp4";
+      video.load();
+      void video.play().catch(() => undefined);
+    };
+    const scheduleVideo = () => {
+      for (const eventName of activationEvents) {
+        window.addEventListener(eventName, startVideo, { once: true, passive: true });
+      }
+      timerId = globalThis.setTimeout(startVideo, 6_000);
+    };
+    if (document.readyState === "complete") scheduleVideo();
+    else window.addEventListener("load", scheduleVideo, { once: true });
+    return () => {
+      window.removeEventListener("load", scheduleVideo);
+      for (const eventName of activationEvents) {
+        window.removeEventListener(eventName, startVideo);
+      }
+      if (timerId !== undefined) globalThis.clearTimeout(timerId);
+    };
+  }, [reduceMotion]);
 
   return (
     <section
@@ -40,20 +72,31 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
       className="relative isolate flex min-h-[92svh] overflow-hidden bg-[#020713] text-white lg:min-h-[100svh]"
     >
       <div className="absolute inset-0 z-[0]" aria-hidden="true">
-        <video
+        <img
+          src="/images/hero-video-poster.webp"
+          alt=""
+          width={1280}
+          height={720}
+          loading="eager"
+          decoding="sync"
+          fetchPriority="high"
           className="absolute inset-0 z-[0] h-full w-full object-cover object-center"
+        />
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 z-[0] h-full w-full object-cover object-center transition-opacity duration-500 ${videoPlaying ? "opacity-100" : "opacity-0"}`}
           autoPlay
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
+          poster="/images/hero-video-poster.webp"
           tabIndex={-1}
-          onCanPlay={(event) => void event.currentTarget.play()}
+          onPlaying={() => setVideoPlaying(true)}
+          onCanPlay={(event) => void event.currentTarget.play().catch(() => undefined)}
           onEnded={(event) => void event.currentTarget.play()}
           aria-hidden="true"
-        >
-          <source src="/videos/hero-background-fast.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(3,12,31,.68)_0%,rgba(5,22,52,.72)_55%,rgba(4,15,36,.82)_100%)]" />
         <div className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_50%_45%,rgba(22,119,255,.12),transparent_55%)]" />
         <div className="absolute inset-x-0 bottom-0 z-[1] h-40 bg-gradient-to-t from-[#020713] to-transparent" />
@@ -90,11 +133,11 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
           <motion.h1
             id="hero-heading"
             variants={{
-              hidden: { opacity: 0, y: 24 },
+              hidden: { opacity: 1, y: 0 },
               visible: { opacity: 1, y: 0 },
             }}
             transition={{ duration: reduceMotion ? 0 : MOTION.cinematic, ease: MOTION.ease }}
-            className="mt-7 max-w-5xl text-balance font-heading text-[2.65rem] font-extrabold leading-[1.02] tracking-[-0.055em] text-white drop-shadow-[0_8px_32px_rgba(0,0,0,.35)] sm:text-6xl lg:text-[clamp(4.5rem,6.5vw,6.5rem)]"
+            className="mt-7 max-w-5xl text-balance font-heading text-[2.2rem] font-extrabold leading-[1.02] tracking-[-0.055em] text-white drop-shadow-[0_8px_32px_rgba(0,0,0,.35)] min-[430px]:text-[2.65rem] sm:text-6xl lg:text-[clamp(4.5rem,6.5vw,6.5rem)]"
           >
             <motion.span className="block" style={{ x: firstLineX }}>
               {headingLineOne}

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, BadgeCheck, Globe2, Lightbulb, Zap } from "lucide-react";
-import officeTeam from "@/assets/sky-designers-office-team.png";
+import officeTeam from "@/assets/optimized/sky-designers-office-team.webp";
 import SectionHeading from "@/components/common/SectionHeading";
 import { company } from "@/data/siteData";
 import { MOTION } from "@/lib/motion";
@@ -36,6 +36,10 @@ const AboutSection = () => (
                 <img
                   src={officeTeam}
                   alt="Sky Designers team working together in the office"
+                  width={1200}
+                  height={900}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-[4/3] w-full scale-[1.03] rounded-[23px] object-cover object-center sm:aspect-[16/10] lg:aspect-[4/4.6]"
                 />
               </ParallaxMedia>

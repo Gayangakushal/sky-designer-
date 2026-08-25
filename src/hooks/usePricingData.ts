@@ -10,12 +10,13 @@ import {
 const formatPrice = (value: number) => new Intl.NumberFormat("en-US").format(value);
 
 /** Live pricing packages + comparison table, with the bundled data as fallback. */
-export function usePricingData() {
+export function usePricingData(enabled = true) {
   const [packages, setPackages] = useState<PricingPackage[]>(fallbackPackages);
   const [comparison, setComparison] = useState<ComparisonCategory[]>(fallbackComparison);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!enabled) return;
     let active = true;
 
     const load = async () => {
@@ -73,7 +74,7 @@ export function usePricingData() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [enabled]);
 
   return { packages, comparison, loading };
 }

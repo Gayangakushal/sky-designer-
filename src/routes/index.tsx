@@ -21,6 +21,21 @@ export const Route = createFileRoute("/")({
       return [];
     }
   },
-  head: () => createSeoHead({ title, description, path: "/" }),
+  head: () => {
+    const seo = createSeoHead({ title, description, path: "/" });
+    return {
+      ...seo,
+      links: [
+        ...seo.links,
+        {
+          rel: "preload",
+          href: "/images/hero-video-poster.webp",
+          as: "image",
+          type: "image/webp",
+          fetchPriority: "high",
+        },
+      ],
+    };
+  },
   component: Index,
 });
