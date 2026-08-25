@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { parseVideoUrl, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/video-embed";
 
 export const POST_TYPES = ["image", "video", "youtube", "carousel", "project"] as const;
 export const POST_STATUSES = ["draft", "scheduled", "published", "archived"] as const;
@@ -9,7 +10,7 @@ export type PostStatus = (typeof POST_STATUSES)[number];
 export const POST_TYPE_LABELS: Record<PostType, string> = {
   image: "Image Post",
   video: "Video / Reel",
-  youtube: "YouTube Video",
+  youtube: "YouTube / Google Drive Video",
   carousel: "Carousel",
   project: "Project",
 };
@@ -82,26 +83,22 @@ export const slugify = (value: string) =>
 
 /** Extracts the video id from any common YouTube URL shape. */
 export const parseYouTubeId = (url: string): string | null => {
-  if (!url) return null;
-  const patterns = [
-    /(?:youtube\.com\/watch\?(?:.*&)?v=)([\w-]{11})/,
-    /(?:youtu\.be\/)([\w-]{11})/,
-    /(?:youtube\.com\/(?:embed|v|shorts|live)\/)([\w-]{11})/,
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match?.[1]) return match[1];
-  }
-  return /^[\w-]{11}$/.test(url.trim()) ? url.trim() : null;
+  const parsed = parseVideoUrl(url);
+  if (parsed?.provider === "youtube") return parsed.id;
+  return /^[A-Za-z0-9_-]{6,200}$/.test(url.trim()) ? url.trim() : null;
 };
 
-export const youtubeThumbnail = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-export const youtubeEmbed = (id: string) => `https://www.youtube-nocookie.com/embed/${id}`;
+export const youtubeThumbnail = youtubeThumbnailUrl;
+export const youtubeEmbed = youtubeEmbedUrl;
 
 /** Best available preview image for a card. */
 export const postPreviewImage = (post: ContentPost): string | null => {
   if (post.cover_image_url) return post.cover_image_url;
-  if (post.post_type === "youtube" && post.youtube_video_id) return youtubeThumbnail(post.youtube_video_id);
+  if (post.post_type === "youtube") {
+    const parsed = parseVideoUrl(post.youtube_url);
+    if (parsed?.thumbnailUrl) return parsed.thumbnailUrl;
+    if (post.youtube_video_id) return youtubeThumbnail(post.youtube_video_id);
+  }
   const firstImage = (post.media ?? []).find((m) => m.media_type === "image");
   return firstImage?.media_url ?? (post.media ?? [])[0]?.thumbnail_url ?? null;
 };

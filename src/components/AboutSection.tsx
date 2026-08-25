@@ -97,10 +97,10 @@ const AboutSection = () => (
           </div>
 
           <a
-            href="#services"
+            href="/about"
             className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold text-primary transition hover:gap-3"
           >
-            Explore our capabilities <ArrowUpRight size={17} />
+            Learn more about Sky Designers <ArrowUpRight size={17} />
           </a>
         </div>
       </div>

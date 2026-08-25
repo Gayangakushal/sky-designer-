@@ -1,4 +1,4 @@
-import { company } from "@/data/siteData";
+import { company, founder, services } from "@/data/siteData";
 
 export const SITE_URL = "https://skydesigners.lk";
 export const SITE_NAME = "Sky Designers";
@@ -66,10 +66,48 @@ export const organizationJsonLd = {
   logo: `${SITE_URL}/apple-touch-icon.png`,
   email: company.email.toLowerCase(),
   telephone: company.phone,
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    telephone: company.phone,
+    email: company.email.toLowerCase(),
+    areaServed: "LK",
+  },
   areaServed: { "@type": "Country", name: "Sri Lanka" },
   description:
     "Sky Designers is a Sri Lankan digital marketing and creative agency providing advertising, social media, branding, content production, web development, and digital strategy services.",
-  sameAs: [company.facebook, company.instagram, company.linkedin, company.threads, company.tiktok, company.youtube],
+  identifier: {
+    "@type": "PropertyValue",
+    name: "Business Registration",
+    value: company.registration,
+  },
+  founder: {
+    "@type": "Person",
+    name: founder.name,
+    jobTitle: founder.role,
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Sky Designers services",
+    itemListElement: services.map((service) => ({
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: service.title,
+        url: `${SITE_URL}/services/${service.slug}`,
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "Sri Lanka" },
+      },
+    })),
+  },
+  sameAs: [
+    company.facebook,
+    company.instagram,
+    company.linkedin,
+    company.threads,
+    company.tiktok,
+    company.youtube,
+  ],
 };
 
 export const websiteJsonLd = {

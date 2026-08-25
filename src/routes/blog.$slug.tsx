@@ -4,6 +4,7 @@ import { blogPostQuery } from "@/hooks/useBlog";
 import { BlogApiError } from "@/lib/blog-api";
 import { resolveBlogImageUrl } from "@/lib/blog-images";
 import { absoluteUrl, cleanDescription, createSeoHead, SITE_URL } from "@/lib/seo";
+import { founder, team } from "@/data/siteData";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ context, params }) => {
@@ -24,6 +25,24 @@ export const Route = createFileRoute("/blog/$slug")({
     const base = createSeoHead({ title, description, path, image: loaderData?.image, type: "article" });
     if (!post) return base;
     const published = post.published_at || post.created_at;
+    const knownAuthor = post.author_name
+      ? [founder, ...team].find(
+          (person) => person.name.toLowerCase() === post.author_name?.trim().toLowerCase(),
+        )
+      : undefined;
+    const author = post.author_name
+      ? {
+          "@type": "Person",
+          name: post.author_name,
+          ...(knownAuthor
+            ? {
+                jobTitle: knownAuthor.role,
+                worksFor: { "@id": `${SITE_URL}/#organization` },
+                url: `${SITE_URL}/about`,
+              }
+            : {}),
+        }
+      : { "@id": `${SITE_URL}/#organization` };
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -32,7 +51,7 @@ export const Route = createFileRoute("/blog/$slug")({
       headline: post.title,
       description,
       ...(loaderData.image ? { image: [loaderData.image] } : {}),
-      author: { "@type": post.author_name ? "Person" : "Organization", name: post.author_name || "Sky Designers" },
+      author,
       datePublished: published,
       dateModified: post.updated_at || published,
       publisher: { "@id": `${SITE_URL}/#organization` },

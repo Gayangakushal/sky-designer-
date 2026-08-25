@@ -7,10 +7,12 @@ import BookingModal from "@/components/BookingModal";
 import WorkCard from "@/components/work/WorkCard";
 import { Link, useParams } from "@/lib/router-compat";
 import { usePublishedPost, usePublishedPosts } from "@/hooks/useContent";
-import { postDate, postPreviewImage, youtubeEmbed, type ContentPost } from "@/lib/content";
+import { postDate, postPreviewImage, type ContentPost } from "@/lib/content";
 import ImageReveal from "@/components/motion/ImageReveal";
 import MotionReveal from "@/components/MotionReveal";
 import { MOTION } from "@/lib/motion";
+import { relatedServicePagesForWork, servicePageForLabel } from "@/lib/service-links";
+import VideoPlayer from "@/components/work/VideoPlayer";
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
@@ -24,31 +26,12 @@ const PostMedia = ({
 }) => {
   const cover = postPreviewImage(post);
 
-  if (post.post_type === "youtube" && post.youtube_video_id) {
-    return (
-      <div className="aspect-video w-full overflow-hidden rounded-[24px] border border-white/10 bg-black">
-        <iframe
-          src={youtubeEmbed(post.youtube_video_id)}
-          title={post.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="h-full w-full"
-        />
-      </div>
-    );
+  if (post.post_type === "youtube" && (post.youtube_url || post.youtube_video_id)) {
+    return <VideoPlayer url={post.youtube_url} legacyYouTubeId={post.youtube_video_id} title={post.title} />;
   }
 
   if (post.post_type === "video" && post.video_url) {
-    return (
-      <video
-        src={post.video_url}
-        poster={post.cover_image_url ?? undefined}
-        preload="metadata"
-        controls
-        playsInline
-        className="w-full rounded-[24px] border border-white/10 bg-black"
-      />
-    );
+    return <VideoPlayer url={post.video_url} poster={post.cover_image_url} title={post.title} />;
   }
 
   if (!cover) return null;
@@ -90,6 +73,7 @@ const WorkDetail = () => {
   );
 
   const extraVideos = (post?.media ?? []).filter((m) => m.media_type === "video");
+  const relatedServices = post ? relatedServicePagesForWork(post) : [];
 
   return (
     <div className="min-h-screen bg-[#030713]">
@@ -173,23 +157,20 @@ const WorkDetail = () => {
                   )}
 
                   {post.post_type === "project" && post.video_url && (
-                    <video
-                      src={post.video_url}
-                      preload="metadata"
-                      controls
-                      playsInline
-                      className="mt-8 w-full rounded-[24px] border border-white/10 bg-black"
+                    <VideoPlayer
+                      url={post.video_url}
+                      poster={post.cover_image_url}
+                      title={post.title}
+                      className="mt-8"
                     />
                   )}
 
                   {extraVideos.map((media) => (
-                    <video
+                    <VideoPlayer
                       key={media.id}
-                      src={media.media_url}
-                      preload="metadata"
-                      controls
-                      playsInline
-                      className="mt-6 w-full rounded-[24px] border border-white/10 bg-black"
+                      url={media.media_url}
+                      title={`${post.title} additional video`}
+                      className="mt-6"
                     />
                   ))}
                 </div>
@@ -220,13 +201,34 @@ const WorkDetail = () => {
                             Services
                           </dt>
                           <dd className="mt-2 flex flex-wrap gap-2">
-                            {post.services.map((service) => (
-                              <span
-                                key={service}
-                                className="rounded-full border border-white/12 bg-white/5 px-3 py-1 text-xs text-slate-200"
+                            {post.services.map((service) => {
+                              const servicePage = servicePageForLabel(service);
+                              const className = "rounded-full border border-white/12 bg-white/5 px-3 py-1 text-xs text-slate-200 transition hover:border-blue-300/40 hover:text-white";
+                              return servicePage ? (
+                                <Link key={service} to={`/services/${servicePage.slug}`} className={className}>
+                                  {service}
+                                </Link>
+                              ) : (
+                                <span key={service} className={className}>{service}</span>
+                              );
+                            })}
+                          </dd>
+                        </div>
+                      )}
+                      {relatedServices.length > 0 && (
+                        <div>
+                          <dt className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                            Related services
+                          </dt>
+                          <dd className="mt-2 flex flex-wrap gap-2">
+                            {relatedServices.map((service) => (
+                              <Link
+                                key={service.slug}
+                                to={`/services/${service.slug}`}
+                                className="rounded-full border border-blue-300/25 bg-blue-400/10 px-3 py-1 text-xs text-blue-200 transition hover:border-blue-300/50 hover:text-white"
                               >
-                                {service}
-                              </span>
+                                {service.title}
+                              </Link>
                             ))}
                           </dd>
                         </div>
@@ -242,6 +244,9 @@ const WorkDetail = () => {
                         Visit project <ExternalLink size={15} />
                       </a>
                     )}
+                    <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-6 text-slate-400">
+                      Published by <Link to="/about" className="font-bold text-blue-300">Sky Designers</Link>. Browse the agency’s <Link to="/services" className="font-bold text-blue-300">digital marketing and creative services</Link>.
+                    </p>
                   </div>
                 </aside>
               </div>

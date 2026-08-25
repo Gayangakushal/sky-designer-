@@ -89,9 +89,9 @@ const Footer = () => {
                 Navigate
               </h3>
               <div className="mt-6 grid gap-3 text-sm font-semibold text-slate-300">
-                <a href="/#about" className="transition hover:text-white">
+                <Link to="/about" className="transition hover:text-white">
                   About
-                </a>
+                </Link>
                 <a href="/#portfolio" className="transition hover:text-white">
                   Our Work
                 </a>

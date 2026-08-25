@@ -9,6 +9,7 @@ type SitemapEntry = { path: string; lastModified?: string | null };
 
 const staticEntries: SitemapEntry[] = [
   { path: "/" },
+  { path: "/about" },
   { path: "/services" },
   ...servicePages.map((service) => ({ path: `/services/${service.slug}` })),
   { path: "/blog" },

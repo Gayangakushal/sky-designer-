@@ -18,18 +18,21 @@ import {
   POST_TYPES,
   POST_TYPE_LABELS,
   createPost,
-  parseYouTubeId,
   replacePostMedia,
   slugify,
   updatePost,
   uploadContentFile,
-  youtubeThumbnail,
   type ContentCategory,
   type ContentPost,
   type MediaInput,
   type PostStatus,
   type PostType,
 } from "@/lib/content";
+import {
+  isSafeDirectVideoUrl,
+  parseVideoUrl,
+  videoProviderLabel,
+} from "@/lib/video-embed";
 
 interface GalleryItem {
   url: string;
@@ -72,7 +75,13 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
     (post?.media ?? []).map((m) => ({ url: m.media_url, media_type: m.media_type === "video" ? "video" : "image" })),
   );
 
-  const youtubeId = useMemo(() => parseYouTubeId(youtubeUrl), [youtubeUrl]);
+  const embeddedPostVideo = useMemo(() => parseVideoUrl(youtubeUrl), [youtubeUrl]);
+  const optionalVideoEmbed = useMemo(() => parseVideoUrl(videoUrl), [videoUrl]);
+  const legacyYouTubeId = post?.post_type === "youtube" ? post.youtube_video_id : null;
+  const embeddedPostIsValid = Boolean(embeddedPostVideo || (!youtubeUrl.trim() && legacyYouTubeId));
+  const activeVideoThumbnail = postType === "youtube"
+    ? embeddedPostVideo?.thumbnailUrl
+    : optionalVideoEmbed?.thumbnailUrl;
 
   const handleTitle = (value: string) => {
     setTitle(value);
@@ -122,10 +131,11 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
       excerpt: excerpt || null,
       content: content || null,
       category_id: categoryId || null,
-      cover_image_url: coverImageUrl || (youtubeId ? youtubeThumbnail(youtubeId) : null),
+      cover_image_url: coverImageUrl || activeVideoThumbnail || null,
       video_url: videoUrl || null,
       youtube_url: youtubeUrl || null,
-      youtube_video_id: youtubeId,
+      youtube_video_id:
+        embeddedPostVideo?.provider === "youtube" ? embeddedPostVideo.id : legacyYouTubeId,
       client_name: clientName || null,
       services: services.split(",").map((s) => s.trim()).filter(Boolean),
       external_url: externalUrl || null,
@@ -148,14 +158,22 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         sort_order: index,
       })),
     };
-  }, [categories, categoryId, clientName, content, coverImageUrl, excerpt, externalUrl, gallery, isFeatured, post, postType, scheduledAt, services, slug, status, title, videoUrl, youtubeId, youtubeUrl]);
+  }, [activeVideoThumbnail, categories, categoryId, clientName, content, coverImageUrl, embeddedPostVideo, excerpt, externalUrl, gallery, isFeatured, legacyYouTubeId, post, postType, scheduledAt, services, slug, status, title, videoUrl, youtubeUrl]);
 
   const validate = (): string | null => {
     if (!title.trim()) return "Title is required.";
     if (!slug.trim()) return "Slug is required.";
     if (!categoryId) return "Choose a category.";
-    if (postType === "youtube" && !youtubeId) return "Enter a valid YouTube URL.";
+    if (postType === "youtube" && !embeddedPostIsValid)
+      return "Enter a valid YouTube or Google Drive share URL.";
     if (postType === "image" && !coverImageUrl) return "Upload the main image.";
+    if (
+      (postType === "video" || postType === "project") &&
+      videoUrl.trim() &&
+      !optionalVideoEmbed &&
+      !isSafeDirectVideoUrl(videoUrl)
+    )
+      return "Enter a valid direct video, YouTube, or Google Drive URL.";
     if (postType === "video" && !videoUrl) return "Upload a video or paste a video URL.";
     if (postType === "carousel" && gallery.filter((g) => g.media_type === "image").length < 2)
       return "Carousel posts need at least two images.";
@@ -181,10 +199,18 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         excerpt: excerpt.trim() || null,
         content: content.trim() || null,
         category_id: categoryId || null,
-        cover_image_url: coverImageUrl || (postType === "youtube" && youtubeId ? youtubeThumbnail(youtubeId) : null),
-        video_url: videoUrl || null,
-        youtube_url: postType === "youtube" ? youtubeUrl.trim() || null : null,
-        youtube_video_id: postType === "youtube" ? youtubeId : null,
+        cover_image_url: coverImageUrl || activeVideoThumbnail || null,
+        video_url: videoUrl.trim() || null,
+        youtube_url:
+          postType === "youtube" ? youtubeUrl.trim() || post?.youtube_url || null : null,
+        youtube_video_id:
+          postType === "youtube"
+            ? embeddedPostVideo?.provider === "youtube"
+              ? embeddedPostVideo.id
+              : embeddedPostVideo?.provider === "google-drive"
+                ? null
+                : legacyYouTubeId
+            : null,
         client_name: clientName.trim() || null,
         services: services.split(",").map((s) => s.trim()).filter(Boolean),
         external_url: externalUrl.trim() || null,
@@ -298,14 +324,21 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
           {postType === "youtube" && (
             <div className="space-y-3">
               <label className="space-y-2 block">
-                <span className={labelClass}>YouTube URL *</span>
-                <Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className={inputClass} placeholder="https://www.youtube.com/watch?v=..." />
+                <span className={labelClass}>Video URL (YouTube or Google Drive) *</span>
+                <Input type="url" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} className={inputClass} placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/.../view" />
+                <span className="block text-xs leading-5 text-muted-foreground">
+                  Paste a YouTube link or a Google Drive share link. Google Drive files must be shared as Anyone with the link.
+                </span>
               </label>
-              {youtubeUrl && !youtubeId && <p className="text-sm text-destructive">That does not look like a valid YouTube link.</p>}
-              {youtubeId && (
+              {youtubeUrl && !embeddedPostVideo && <p className="text-sm text-destructive">Enter a supported YouTube or Google Drive video link.</p>}
+              {!youtubeUrl && legacyYouTubeId && <p className="text-sm text-muted-foreground">Provider: YouTube (existing record)</p>}
+              {embeddedPostVideo && (
                 <div className="flex items-center gap-3">
-                  <img src={youtubeThumbnail(youtubeId)} alt="YouTube thumbnail" className="h-20 w-36 rounded-lg object-cover" />
-                  <p className="text-sm text-muted-foreground">Video ID: {youtubeId}</p>
+                  {embeddedPostVideo.thumbnailUrl && <img src={embeddedPostVideo.thumbnailUrl} alt="YouTube video thumbnail" className="h-20 w-36 rounded-lg object-cover" />}
+                  <p className="text-sm text-muted-foreground">
+                    Provider: {videoProviderLabel(embeddedPostVideo.provider)}<br />
+                    Video ID: {embeddedPostVideo.id}
+                  </p>
                 </div>
               )}
             </div>
@@ -329,7 +362,9 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
               <span className={labelClass}>{postType === "video" ? "Video file or URL *" : "Optional video"}</span>
               <input type="file" accept={ACCEPTED_VIDEO_TYPES} onChange={(e) => void uploadFiles(e.target.files, "video")} className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground" />
               <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder="Or paste a direct video URL (.mp4)" />
-              <p className="text-xs text-muted-foreground">For long videos, use a YouTube post instead of uploading large files.</p>
+              <p className="text-xs text-muted-foreground">Paste a direct video file URL, YouTube URL, or Google Drive share URL. Google Drive files must be shared as Anyone with the link.</p>
+              {videoUrl && optionalVideoEmbed && <p className="text-sm text-muted-foreground">Provider: {videoProviderLabel(optionalVideoEmbed.provider)}</p>}
+              {videoUrl && !optionalVideoEmbed && !isSafeDirectVideoUrl(videoUrl) && <p className="text-sm text-destructive">Enter a valid video URL.</p>}
             </div>
           )}
 
