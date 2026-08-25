@@ -8,6 +8,13 @@ export type ParsedVideoUrl = {
   thumbnailUrl: string | null;
 };
 
+export type VideoThumbnailOptions = {
+  coverImageUrl?: string | null;
+  videoUrl?: string | null;
+  legacyYouTubeId?: string | null;
+  fallbackImageUrl?: string | null;
+};
+
 const VALID_ID = /^[A-Za-z0-9_-]{6,200}$/;
 const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com"]);
 
@@ -62,6 +69,27 @@ export const parseVideoUrl = (input: string | null | undefined): ParsedVideoUrl 
     embedUrl: provider === "youtube" ? youtubeEmbedUrl(id) : googleDriveEmbedUrl(id),
     thumbnailUrl: provider === "youtube" ? youtubeThumbnailUrl(id) : null,
   };
+};
+
+/** Resolves a preview without requesting an undocumented provider thumbnail. */
+export const resolveVideoThumbnail = ({
+  coverImageUrl,
+  videoUrl,
+  legacyYouTubeId,
+  fallbackImageUrl,
+}: VideoThumbnailOptions): string | null => {
+  const customCover = coverImageUrl?.trim();
+  if (customCover) return customCover;
+
+  const parsedVideo = parseVideoUrl(videoUrl);
+  if (parsedVideo?.provider === "youtube" && parsedVideo.thumbnailUrl) {
+    return parsedVideo.thumbnailUrl;
+  }
+
+  const legacyId = validId(legacyYouTubeId);
+  if (legacyId) return youtubeThumbnailUrl(legacyId);
+
+  return fallbackImageUrl?.trim() || null;
 };
 
 export const videoProviderLabel = (provider: VideoProvider) =>

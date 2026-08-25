@@ -1,5 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-import { parseVideoUrl, youtubeEmbedUrl, youtubeThumbnailUrl } from "@/lib/video-embed";
+import {
+  parseVideoUrl,
+  resolveVideoThumbnail,
+  youtubeEmbedUrl,
+  youtubeThumbnailUrl,
+} from "@/lib/video-embed";
 
 export const POST_TYPES = ["image", "video", "youtube", "carousel", "project"] as const;
 export const POST_STATUSES = ["draft", "scheduled", "published", "archived"] as const;
@@ -93,14 +98,15 @@ export const youtubeEmbed = youtubeEmbedUrl;
 
 /** Best available preview image for a card. */
 export const postPreviewImage = (post: ContentPost): string | null => {
-  if (post.cover_image_url) return post.cover_image_url;
-  if (post.post_type === "youtube") {
-    const parsed = parseVideoUrl(post.youtube_url);
-    if (parsed?.thumbnailUrl) return parsed.thumbnailUrl;
-    if (post.youtube_video_id) return youtubeThumbnail(post.youtube_video_id);
-  }
   const firstImage = (post.media ?? []).find((m) => m.media_type === "image");
-  return firstImage?.media_url ?? (post.media ?? [])[0]?.thumbnail_url ?? null;
+  const fallbackImage = firstImage?.media_url ?? (post.media ?? [])[0]?.thumbnail_url ?? null;
+
+  return resolveVideoThumbnail({
+    coverImageUrl: post.cover_image_url,
+    videoUrl: post.youtube_url || post.video_url,
+    legacyYouTubeId: post.post_type === "youtube" ? post.youtube_video_id : null,
+    fallbackImageUrl: fallbackImage,
+  });
 };
 
 export const postDate = (post: ContentPost) => post.published_at ?? post.scheduled_at ?? post.created_at;
@@ -206,7 +212,9 @@ export const updatePost = async (id: string, input: Partial<PostInput>) => {
 
 export const deletePost = async (post: ContentPost) => {
   const paths = [...(post.media ?? []).map((m) => storagePathFromUrl(m.media_url)), storagePathFromUrl(post.cover_image_url)]
-    .filter((p): p is string => Boolean(p));
+    .filter((p): p is string => Boolean(p))
+    // Drive thumbnails are cached by file ID and may be shared by several posts.
+    .filter((path) => !path.startsWith("drive-thumbnails/"));
   if (paths.length) await supabase.storage.from(CONTENT_BUCKET).remove(paths);
   const { error } = await supabase.from("content_posts").delete().eq("id", post.id);
   if (error) throw error;

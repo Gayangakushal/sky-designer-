@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Eye, Loader2, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,10 @@ import {
   parseVideoUrl,
   videoProviderLabel,
 } from "@/lib/video-embed";
+import {
+  cacheGoogleDriveThumbnail,
+  type DriveThumbnailResult,
+} from "@/lib/drive-thumbnail.functions";
 
 interface GalleryItem {
   url: string;
@@ -68,6 +72,10 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
   const [coverImageUrl, setCoverImageUrl] = useState(post?.cover_image_url ?? "");
   const [videoUrl, setVideoUrl] = useState(post?.video_url ?? "");
   const [youtubeUrl, setYoutubeUrl] = useState(post?.youtube_url ?? "");
+  const [driveThumbnail, setDriveThumbnail] = useState<{
+    status: "idle" | "loading" | DriveThumbnailResult["status"];
+    url: string | null;
+  }>({ status: "idle", url: null });
   const [clientName, setClientName] = useState(post?.client_name ?? "");
   const [externalUrl, setExternalUrl] = useState(post?.external_url ?? "");
   const [services, setServices] = useState((post?.services ?? []).join(", "));
@@ -77,11 +85,62 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
 
   const embeddedPostVideo = useMemo(() => parseVideoUrl(youtubeUrl), [youtubeUrl]);
   const optionalVideoEmbed = useMemo(() => parseVideoUrl(videoUrl), [videoUrl]);
+  const isGoogleDriveVideo =
+    (postType === "youtube" && embeddedPostVideo?.provider === "google-drive") ||
+    ((postType === "video" || postType === "project") &&
+      optionalVideoEmbed?.provider === "google-drive");
+  const detectedDriveVideo =
+    embeddedPostVideo?.provider === "google-drive"
+      ? embeddedPostVideo
+      : optionalVideoEmbed?.provider === "google-drive"
+        ? optionalVideoEmbed
+        : null;
+  const detectedDriveUrl = detectedDriveVideo?.originalUrl ?? "";
   const legacyYouTubeId = post?.post_type === "youtube" ? post.youtube_video_id : null;
   const embeddedPostIsValid = Boolean(embeddedPostVideo || (!youtubeUrl.trim() && legacyYouTubeId));
   const activeVideoThumbnail = postType === "youtube"
     ? embeddedPostVideo?.thumbnailUrl
     : optionalVideoEmbed?.thumbnailUrl;
+  const existingAutomaticDriveCover =
+    isGoogleDriveVideo && coverImageUrl.includes("/drive-thumbnails/") ? coverImageUrl : "";
+  const customCoverImageUrl = existingAutomaticDriveCover ? "" : coverImageUrl;
+  const resolvedCoverImageUrl =
+    customCoverImageUrl || driveThumbnail.url || existingAutomaticDriveCover || activeVideoThumbnail || "";
+  const driveCoverStatus = customCoverImageUrl
+    ? "Custom cover selected"
+    : driveThumbnail.status === "available" || existingAutomaticDriveCover
+      ? "Automatic thumbnail detected"
+      : driveThumbnail.status === "loading"
+      ? "Detecting automatic thumbnail…"
+        : driveThumbnail.status === "unavailable"
+          ? "Automatic thumbnail unavailable"
+          : "Waiting for a valid Drive link";
+
+  useEffect(() => {
+    let active = true;
+    if (!detectedDriveUrl) {
+      setDriveThumbnail({ status: "idle", url: null });
+      return () => {
+        active = false;
+      };
+    }
+
+    setDriveThumbnail({ status: "loading", url: null });
+    const timeout = window.setTimeout(() => {
+      void cacheGoogleDriveThumbnail({ data: { driveUrl: detectedDriveUrl } })
+        .then((result) => {
+          if (active) setDriveThumbnail({ status: result.status, url: result.url });
+        })
+        .catch(() => {
+          if (active) setDriveThumbnail({ status: "unavailable", url: null });
+        });
+    }, 600);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timeout);
+    };
+  }, [detectedDriveUrl]);
 
   const handleTitle = (value: string) => {
     setTitle(value);
@@ -131,7 +190,7 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
       excerpt: excerpt || null,
       content: content || null,
       category_id: categoryId || null,
-      cover_image_url: coverImageUrl || activeVideoThumbnail || null,
+      cover_image_url: resolvedCoverImageUrl || null,
       video_url: videoUrl || null,
       youtube_url: youtubeUrl || null,
       youtube_video_id:
@@ -158,7 +217,7 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         sort_order: index,
       })),
     };
-  }, [activeVideoThumbnail, categories, categoryId, clientName, content, coverImageUrl, embeddedPostVideo, excerpt, externalUrl, gallery, isFeatured, legacyYouTubeId, post, postType, scheduledAt, services, slug, status, title, videoUrl, youtubeUrl]);
+  }, [categories, categoryId, clientName, content, embeddedPostVideo, excerpt, externalUrl, gallery, isFeatured, legacyYouTubeId, post, postType, resolvedCoverImageUrl, scheduledAt, services, slug, status, title, videoUrl, youtubeUrl]);
 
   const validate = (): string | null => {
     if (!title.trim()) return "Title is required.";
@@ -177,7 +236,8 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
     if (postType === "video" && !videoUrl) return "Upload a video or paste a video URL.";
     if (postType === "carousel" && gallery.filter((g) => g.media_type === "image").length < 2)
       return "Carousel posts need at least two images.";
-    if (postType === "project" && !coverImageUrl) return "Project posts need a cover image.";
+    if (postType === "project" && !resolvedCoverImageUrl && !isGoogleDriveVideo)
+      return "Project posts need a cover image.";
     if (status === "scheduled" && validateFutureColomboSchedule(scheduledAt).error)
       return validateFutureColomboSchedule(scheduledAt).error;
     return null;
@@ -192,6 +252,19 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
     setSaving(true);
     try {
       const schedule = status === "scheduled" ? validateFutureColomboSchedule(scheduledAt) : null;
+      let automaticDriveCover: string | null =
+        driveThumbnail.url || existingAutomaticDriveCover || null;
+      if (isGoogleDriveVideo && !customCoverImageUrl && !automaticDriveCover && detectedDriveUrl) {
+        try {
+          const result = await cacheGoogleDriveThumbnail({
+            data: { driveUrl: detectedDriveUrl },
+          });
+          automaticDriveCover = result.url;
+          setDriveThumbnail({ status: result.status, url: result.url });
+        } catch {
+          setDriveThumbnail({ status: "unavailable", url: null });
+        }
+      }
       const payload = {
         title: title.trim(),
         slug: slugify(slug),
@@ -199,7 +272,8 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         excerpt: excerpt.trim() || null,
         content: content.trim() || null,
         category_id: categoryId || null,
-        cover_image_url: coverImageUrl || activeVideoThumbnail || null,
+        cover_image_url:
+          customCoverImageUrl || automaticDriveCover || activeVideoThumbnail || null,
         video_url: videoUrl.trim() || null,
         youtube_url:
           postType === "youtube" ? youtubeUrl.trim() || post?.youtube_url || null : null,
@@ -334,23 +408,49 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
               {!youtubeUrl && legacyYouTubeId && <p className="text-sm text-muted-foreground">Provider: YouTube (existing record)</p>}
               {embeddedPostVideo && (
                 <div className="flex items-center gap-3">
-                  {embeddedPostVideo.thumbnailUrl && <img src={embeddedPostVideo.thumbnailUrl} alt="YouTube video thumbnail" className="h-20 w-36 rounded-lg object-cover" />}
+                  {resolvedCoverImageUrl && (
+                    <img
+                      src={resolvedCoverImageUrl}
+                      alt={`${videoProviderLabel(embeddedPostVideo.provider)} video thumbnail preview`}
+                      className="h-20 w-36 rounded-lg object-cover"
+                    />
+                  )}
                   <p className="text-sm text-muted-foreground">
                     Provider: {videoProviderLabel(embeddedPostVideo.provider)}<br />
-                    Video ID: {embeddedPostVideo.id}
+                    {embeddedPostVideo.provider === "google-drive" ? "File ID" : "Video ID"}: {embeddedPostVideo.id}
+                    {embeddedPostVideo.provider === "google-drive" && (
+                      <><br />Cover: {driveCoverStatus}</>
+                    )}
                   </p>
                 </div>
               )}
             </div>
           )}
 
-          {(postType === "image" || postType === "project" || postType === "video" || postType === "carousel") && (
+          {(postType === "image" ||
+            postType === "project" ||
+            postType === "video" ||
+            postType === "carousel" ||
+            (postType === "youtube" && embeddedPostVideo?.provider === "google-drive")) && (
             <label className="space-y-2 block">
-              <span className={labelClass}>{postType === "project" ? "Cover image *" : postType === "image" ? "Main image *" : "Cover image (optional)"}</span>
+              <span className={labelClass}>
+                {isGoogleDriveVideo
+                  ? "Custom Cover (optional)"
+                  : postType === "project"
+                    ? "Cover image *"
+                    : postType === "image"
+                      ? "Main image *"
+                      : "Cover image (optional)"}
+              </span>
               <input type="file" accept={ACCEPTED_IMAGE_TYPES} onChange={(e) => void uploadFiles(e.target.files, "cover")} className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground" />
-              {coverImageUrl && (
+              {isGoogleDriveVideo && (
+                <span className="block text-xs leading-5 text-muted-foreground">
+                  An automatic Google Drive thumbnail will be used when available. Upload an image only to override it.
+                </span>
+              )}
+              {customCoverImageUrl && (
                 <div className="flex items-center gap-3">
-                  <img src={coverImageUrl} alt="Cover" className="h-20 w-32 rounded-lg object-cover" />
+                  <img src={customCoverImageUrl} alt={isGoogleDriveVideo ? "Video thumbnail preview" : "Cover preview"} className="h-20 w-32 rounded-lg object-cover" />
                   <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setCoverImageUrl("")}>Remove</Button>
                 </div>
               )}
@@ -363,7 +463,24 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
               <input type="file" accept={ACCEPTED_VIDEO_TYPES} onChange={(e) => void uploadFiles(e.target.files, "video")} className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground" />
               <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder="Or paste a direct video URL (.mp4)" />
               <p className="text-xs text-muted-foreground">Paste a direct video file URL, YouTube URL, or Google Drive share URL. Google Drive files must be shared as Anyone with the link.</p>
-              {videoUrl && optionalVideoEmbed && <p className="text-sm text-muted-foreground">Provider: {videoProviderLabel(optionalVideoEmbed.provider)}</p>}
+              {videoUrl && optionalVideoEmbed && (
+                <div className="flex items-center gap-3">
+                  {resolvedCoverImageUrl && (
+                    <img
+                      src={resolvedCoverImageUrl}
+                      alt={`${videoProviderLabel(optionalVideoEmbed.provider)} video thumbnail preview`}
+                      className="h-20 w-36 rounded-lg object-cover"
+                    />
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Provider: {videoProviderLabel(optionalVideoEmbed.provider)}<br />
+                    {optionalVideoEmbed.provider === "google-drive" ? "File ID" : "Video ID"}: {optionalVideoEmbed.id}
+                    {optionalVideoEmbed.provider === "google-drive" && (
+                      <><br />Cover: {driveCoverStatus}</>
+                    )}
+                  </p>
+                </div>
+              )}
               {videoUrl && !optionalVideoEmbed && !isSafeDirectVideoUrl(videoUrl) && <p className="text-sm text-destructive">Enter a valid video URL.</p>}
             </div>
           )}

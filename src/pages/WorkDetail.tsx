@@ -27,11 +27,11 @@ const PostMedia = ({
   const cover = postPreviewImage(post);
 
   if (post.post_type === "youtube" && (post.youtube_url || post.youtube_video_id)) {
-    return <VideoPlayer url={post.youtube_url} legacyYouTubeId={post.youtube_video_id} title={post.title} />;
+    return <VideoPlayer url={post.youtube_url} legacyYouTubeId={post.youtube_video_id} poster={cover} title={post.title} />;
   }
 
   if (post.post_type === "video" && post.video_url) {
-    return <VideoPlayer url={post.video_url} poster={post.cover_image_url} title={post.title} />;
+    return <VideoPlayer url={post.video_url} poster={cover} title={post.title} />;
   }
 
   if (!cover) return null;
@@ -159,7 +159,7 @@ const WorkDetail = () => {
                   {post.post_type === "project" && post.video_url && (
                     <VideoPlayer
                       url={post.video_url}
-                      poster={post.cover_image_url}
+                      poster={postPreviewImage(post)}
                       title={post.title}
                       className="mt-8"
                     />

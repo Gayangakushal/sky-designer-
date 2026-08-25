@@ -1,4 +1,4 @@
-import { ArrowUpRight, Copy, Image as ImageIcon, Play } from "lucide-react";
+import { ArrowUpRight, Copy, Image as ImageIcon, Play, Video } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { postPreviewImage, type ContentPost } from "@/lib/content";
 import { parseVideoUrl } from "@/lib/video-embed";
@@ -12,7 +12,10 @@ interface WorkCardProps {
 const WorkCard = ({ post, large = false }: WorkCardProps) => {
   const image = postPreviewImage(post);
   const embeddedVideo = parseVideoUrl(post.video_url || post.youtube_url);
-  const isPlayable = post.post_type === "video" || post.post_type === "youtube";
+  const isPlayable =
+    post.post_type === "video" ||
+    post.post_type === "youtube" ||
+    Boolean(post.video_url);
   const carouselCount = post.post_type === "carousel" ? (post.media ?? []).length : 0;
   const action = post.post_type === "project" ? "View project" : "View post";
 
@@ -37,7 +40,11 @@ const WorkCard = ({ post, large = false }: WorkCardProps) => {
           <video src={post.video_url} preload="none" className="h-full w-full object-cover" muted playsInline />
         ) : (
           <div className="grid h-full w-full place-items-center">
-            <ImageIcon className="h-10 w-10 text-slate-600" />
+            {isPlayable ? (
+              <Video className="h-10 w-10 text-slate-600" aria-hidden="true" />
+            ) : (
+              <ImageIcon className="h-10 w-10 text-slate-600" aria-hidden="true" />
+            )}
           </div>
         )}
 
