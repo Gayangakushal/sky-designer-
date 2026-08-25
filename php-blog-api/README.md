@@ -1,6 +1,8 @@
 # Sky Designers blog admin API
 
-Upload the contents of this repository's `php-blog-api/admin/` directory to:
+Upload `posts.php`, `post.php`, `categories.php`, and `public-bootstrap.php` to
+`public_html/api/blog/`, then upload the contents of this repository's
+`php-blog-api/admin/` directory to:
 
 `public_html/api/blog/admin/`
 
@@ -18,3 +20,9 @@ SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
 ```
 
 Allowed browser origins are limited in `admin/auth.php` to `http://localhost:5173` and `https://skydesigners.lk`.
+
+Before deploying the scheduling-aware PHP files, run
+`migrations/20260825_add_scheduled_publishing.sql` against the existing blog
+database. It only adds the nullable scheduling field, extends an ENUM status
+column when necessary, and adds an index; it does not update existing records.
+MySQL `UTC_TIMESTAMP()` is the authority used by public post queries.

@@ -6,6 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import WorkCard from "@/components/work/WorkCard";
 import {
+  COLOMBO_TIME_ZONE_LABEL,
+  formatColomboDateTime,
+  utcToColomboInput,
+  validateFutureColomboSchedule,
+} from "@/lib/scheduling";
+import {
   ACCEPTED_IMAGE_TYPES,
   ACCEPTED_VIDEO_TYPES,
   POST_STATUSES,
@@ -55,7 +61,7 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
   const [content, setContent] = useState(post?.content ?? "");
   const [isFeatured, setIsFeatured] = useState(post?.is_featured ?? false);
   const [status, setStatus] = useState<PostStatus>(post?.status ?? "draft");
-  const [publishedAt, setPublishedAt] = useState(post?.published_at ? post.published_at.slice(0, 10) : "");
+  const [scheduledAt, setScheduledAt] = useState(utcToColomboInput(post?.scheduled_at));
   const [coverImageUrl, setCoverImageUrl] = useState(post?.cover_image_url ?? "");
   const [videoUrl, setVideoUrl] = useState(post?.video_url ?? "");
   const [youtubeUrl, setYoutubeUrl] = useState(post?.youtube_url ?? "");
@@ -126,7 +132,9 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
       status,
       is_featured: isFeatured,
       sort_order: post?.sort_order ?? 0,
-      published_at: publishedAt || null,
+      published_at: post?.published_at ?? null,
+      scheduled_at:
+        status === "scheduled" ? validateFutureColomboSchedule(scheduledAt).utc : null,
       created_at: post?.created_at ?? new Date().toISOString(),
       updated_at: new Date().toISOString(),
       category: category ? { id: category.id, name: category.name, slug: category.slug } : null,
@@ -140,7 +148,7 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         sort_order: index,
       })),
     };
-  }, [categories, categoryId, clientName, content, coverImageUrl, excerpt, externalUrl, gallery, isFeatured, post, postType, publishedAt, services, slug, status, title, videoUrl, youtubeId, youtubeUrl]);
+  }, [categories, categoryId, clientName, content, coverImageUrl, excerpt, externalUrl, gallery, isFeatured, post, postType, scheduledAt, services, slug, status, title, videoUrl, youtubeId, youtubeUrl]);
 
   const validate = (): string | null => {
     if (!title.trim()) return "Title is required.";
@@ -152,6 +160,8 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
     if (postType === "carousel" && gallery.filter((g) => g.media_type === "image").length < 2)
       return "Carousel posts need at least two images.";
     if (postType === "project" && !coverImageUrl) return "Project posts need a cover image.";
+    if (status === "scheduled" && validateFutureColomboSchedule(scheduledAt).error)
+      return validateFutureColomboSchedule(scheduledAt).error;
     return null;
   };
 
@@ -163,6 +173,7 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
     }
     setSaving(true);
     try {
+      const schedule = status === "scheduled" ? validateFutureColomboSchedule(scheduledAt) : null;
       const payload = {
         title: title.trim(),
         slug: slugify(slug),
@@ -179,7 +190,13 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
         external_url: externalUrl.trim() || null,
         status,
         is_featured: isFeatured,
-        published_at: publishedAt ? new Date(publishedAt).toISOString() : null,
+        published_at:
+          status === "published"
+            ? post?.published_at ?? new Date().toISOString()
+            : status === "scheduled"
+              ? schedule?.utc ?? null
+              : post?.published_at ?? null,
+        scheduled_at: status === "scheduled" ? schedule?.utc ?? null : null,
       };
 
       const mediaItems: MediaInput[] = gallery.map((item, index) => ({
@@ -252,14 +269,22 @@ const ContentPostForm = ({ post, categories, onClose, onSaved }: ContentPostForm
             <span className={labelClass}>Status</span>
             <select value={status} onChange={(e) => setStatus(e.target.value as PostStatus)} className="h-10 w-full rounded-md border border-border bg-secondary px-3 text-sm text-foreground">
               {POST_STATUSES.map((value) => (
-                <option key={value} value={value}>{value}</option>
+                <option key={value} value={value}>
+                  {value === "published" ? "Publish Now" : value === "scheduled" ? "Schedule Later" : value[0]?.toUpperCase() + value.slice(1)}
+                </option>
               ))}
             </select>
           </label>
-          <label className="space-y-2">
-            <span className={labelClass}>Publish date</span>
-            <Input type="date" value={publishedAt} onChange={(e) => setPublishedAt(e.target.value)} className={inputClass} />
-          </label>
+          {status === "scheduled" && (
+            <label className="space-y-2">
+              <span className={labelClass}>Publish date and time *</span>
+              <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} className={inputClass} required />
+              <span className="block text-xs text-muted-foreground">{COLOMBO_TIME_ZONE_LABEL}</span>
+              {scheduledAt && !validateFutureColomboSchedule(scheduledAt).error && (
+                <span className="block text-xs text-muted-foreground">Will publish {formatColomboDateTime(validateFutureColomboSchedule(scheduledAt).utc)}</span>
+              )}
+            </label>
+          )}
           <label className="flex items-center gap-3 md:col-span-2">
             <input type="checkbox" checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)} className="h-4 w-4" />
             <span className="text-sm text-foreground">Featured (shows first on the homepage)</span>

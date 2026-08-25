@@ -9,8 +9,13 @@ import type {
   BlogStatus,
 } from "@/types/blog";
 
+const serverBlogApiUrl =
+  typeof process !== "undefined"
+    ? process.env.BLOG_API_URL || process.env.VITE_BLOG_API_URL
+    : undefined;
+
 export const BLOG_API_URL = (
-  import.meta.env.VITE_BLOG_API_URL || "https://api.skydesigners.lk/blog"
+  serverBlogApiUrl || import.meta.env.VITE_BLOG_API_URL || "https://api.skydesigners.lk/blog"
 ).replace(/\/$/, "");
 
 type JsonObject = Record<string, unknown>;
@@ -19,6 +24,7 @@ export class BlogApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public confirmedNotFound = false,
   ) {
     super(message);
     this.name = "BlogApiError";
@@ -50,11 +56,14 @@ function normalizeCategory(value: unknown): BlogCategory {
   };
 }
 
-export function normalizeBlogPost(value: unknown): BlogPost {
+export function normalizeBlogPost(value: unknown, fallbackStatus: BlogStatus = "draft"): BlogPost {
   const post = asObject(value);
   const nestedCategory = post.category ? normalizeCategory(post.category) : null;
+  const rawStatus = asString(post.status).toLowerCase();
   const status: BlogStatus =
-    asString(post.status).toLowerCase() === "published" ? "published" : "draft";
+    rawStatus === "published" || rawStatus === "scheduled" || rawStatus === "draft"
+      ? rawStatus
+      : fallbackStatus;
   return {
     id: asNumber(post.id),
     category_id: asNumber(post.category_id ?? nestedCategory?.id),
@@ -72,6 +81,7 @@ export function normalizeBlogPost(value: unknown): BlogPost {
     seo_title: asNullableString(post.seo_title),
     seo_description: asNullableString(post.seo_description),
     published_at: asNullableString(post.published_at),
+    scheduled_at: asNullableString(post.scheduled_at),
     created_at: asString(post.created_at),
     updated_at: asString(post.updated_at),
   };
@@ -86,12 +96,15 @@ async function requestJson(path: string, init?: RequestInit): Promise<JsonObject
   try {
     payload = asObject(await response.json());
   } catch {
-    throw new BlogApiError("The blog service returned an invalid response.", response.status);
+    // An HTML/error-page 404 is not proof that a blog slug is unpublished.
+    throw new BlogApiError("The blog service returned an invalid response.", 502);
   }
   if (!response.ok || payload.success === false) {
+    const confirmedNotFound = response.status === 404 && payload.success === false;
     throw new BlogApiError(
       asString(payload.message, "The blog service could not complete the request."),
-      response.status,
+      confirmedNotFound ? 404 : response.status || 502,
+      confirmedNotFound,
     );
   }
   return payload;
@@ -99,7 +112,9 @@ async function requestJson(path: string, init?: RequestInit): Promise<JsonObject
 
 export async function fetchPublishedPosts(): Promise<BlogPostListResponse> {
   const payload = await requestJson("posts.php");
-  const posts = Array.isArray(payload.posts) ? payload.posts.map(normalizeBlogPost) : [];
+  const posts = Array.isArray(payload.posts)
+    ? payload.posts.map((post) => normalizeBlogPost(post, "published"))
+    : [];
   return { success: true, posts };
 }
 
@@ -113,7 +128,13 @@ export async function fetchBlogCategories(): Promise<BlogCategoriesResponse> {
 
 export async function fetchPostBySlug(slug: string): Promise<BlogPostResponse> {
   const payload = await requestJson(`post.php?slug=${encodeURIComponent(slug)}`);
-  return { success: true, post: normalizeBlogPost(payload.post) };
+  const rawPost = asObject(payload.post);
+  if (!asString(rawPost.slug) || !asString(rawPost.title)) {
+    throw new BlogApiError("The blog service returned an incomplete post.", 502);
+  }
+  // A successful response from this public endpoint is itself confirmation that
+  // the record is published; the PHP response does not include a status field.
+  return { success: true, post: normalizeBlogPost(rawPost, "published") };
 }
 
 async function adminRequest(path: string, init?: RequestInit): Promise<JsonObject> {
@@ -134,7 +155,7 @@ async function adminRequest(path: string, init?: RequestInit): Promise<JsonObjec
 
 export async function fetchAdminPosts(): Promise<BlogPost[]> {
   const payload = await adminRequest("posts.php");
-  return Array.isArray(payload.posts) ? payload.posts.map(normalizeBlogPost) : [];
+  return Array.isArray(payload.posts) ? payload.posts.map((post) => normalizeBlogPost(post)) : [];
 }
 
 export async function createBlogPost(input: BlogPostInput): Promise<BlogPost> {

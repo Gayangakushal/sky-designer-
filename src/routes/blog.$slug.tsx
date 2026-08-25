@@ -12,7 +12,7 @@ export const Route = createFileRoute("/blog/$slug")({
       if (!post || post.status !== "published") throw notFound();
       return { post, image: await resolveBlogImageUrl(post.featured_image) };
     } catch (error) {
-      if (error instanceof BlogApiError && error.status === 404) throw notFound();
+      if (error instanceof BlogApiError && error.confirmedNotFound) throw notFound();
       throw error;
     }
   },

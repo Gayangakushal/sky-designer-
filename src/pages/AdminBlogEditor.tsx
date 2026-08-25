@@ -9,6 +9,12 @@ import { useBlogImageUrl } from "@/hooks/useBlogImageUrl";
 import type { BlogPostInput, BlogStatus } from "@/types/blog";
 import { Link, useNavigate, useParams } from "@/lib/router-compat";
 import { useToast } from "@/hooks/use-toast";
+import {
+  COLOMBO_TIME_ZONE_LABEL,
+  formatColomboDateTime,
+  utcToColomboInput,
+  validateFutureColomboSchedule,
+} from "@/lib/scheduling";
 
 const emptyForm: BlogPostInput = {
   title: "",
@@ -23,6 +29,7 @@ const emptyForm: BlogPostInput = {
   seo_title: "",
   seo_description: "",
   published_at: null,
+  scheduled_at: null,
 };
 
 const slugify = (value: string) =>
@@ -32,24 +39,12 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-// MySQL DATETIME has no timezone. Keep the wall-clock value selected by the admin unchanged.
-const toLocalDateTime = (value: string | null) => {
-  if (!value) return "";
-  const match = value.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/);
-  return match ? `${match[1]}T${match[2]}` : "";
-};
-const fromLocalDateTime = (value: string) => (value ? `${value.replace("T", " ")}:00` : null);
-const currentLocalDateTime = () => {
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-  return `${local.toISOString().slice(0, 16).replace("T", " ")}:00`;
-};
-
 const AdminBlogEditor = () => {
   const { id } = useParams<{ id: string }>();
   const editingId = id ? Number(id) : null;
   const isEditing = Number.isFinite(editingId);
   const [form, setForm] = useState<BlogPostInput>(emptyForm);
+  const [scheduledInput, setScheduledInput] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -86,8 +81,10 @@ const AdminBlogEditor = () => {
         seo_title: post.seo_title || "",
         seo_description: post.seo_description || "",
         published_at: post.published_at,
+        scheduled_at: post.scheduled_at,
       });
       setSlugTouched(true);
+      setScheduledInput(utcToColomboInput(post.scheduled_at));
       setHydrated(true);
     }
   }, [post, hydrated]);
@@ -139,11 +136,21 @@ const AdminBlogEditor = () => {
       return;
     }
     const status = forcedStatus || form.status;
+    const schedule = status === "scheduled" ? validateFutureColomboSchedule(scheduledInput) : null;
+    if (schedule?.error) {
+      toast({ title: "Choose a future publishing time", description: schedule.error, variant: "destructive" });
+      return;
+    }
     const payload = {
       ...form,
       status,
       published_at:
-        status === "published" ? form.published_at || currentLocalDateTime() : form.published_at,
+        status === "published"
+          ? form.published_at || new Date().toISOString()
+          : status === "scheduled"
+            ? schedule?.utc ?? null
+            : form.published_at,
+      scheduled_at: status === "scheduled" ? schedule?.utc ?? null : null,
     };
     if (
       !payload.title.trim() ||
@@ -273,6 +280,7 @@ const AdminBlogEditor = () => {
                     onChange={(event) => update("status", event.target.value as BlogStatus)}
                   >
                     <option value="draft">Draft</option>
+                    <option value="scheduled">Schedule Later</option>
                     <option value="published">Published</option>
                   </select>
                 </label>
@@ -291,17 +299,21 @@ const AdminBlogEditor = () => {
                     ))}
                   </select>
                 </label>
-                <label>
-                  Published At
-                  <input
-                    type="datetime-local"
-                    value={toLocalDateTime(form.published_at)}
-                    onChange={(event) =>
-                      update("published_at", fromLocalDateTime(event.target.value))
-                    }
-                  />
-                  <small>Select both the publishing date and local time.</small>
-                </label>
+                {form.status === "scheduled" && (
+                  <label>
+                    Publish date and time *
+                    <input
+                      type="datetime-local"
+                      value={scheduledInput}
+                      onChange={(event) => setScheduledInput(event.target.value)}
+                      required
+                    />
+                    <small>{COLOMBO_TIME_ZONE_LABEL}</small>
+                    {scheduledInput && !validateFutureColomboSchedule(scheduledInput).error && (
+                      <small>Will publish {formatColomboDateTime(validateFutureColomboSchedule(scheduledInput).utc)}</small>
+                    )}
+                  </label>
+                )}
                 <label className="blog-featured-toggle">
                   <input
                     type="checkbox"

@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const POST_TYPES = ["image", "video", "youtube", "carousel", "project"] as const;
-export const POST_STATUSES = ["draft", "published", "archived"] as const;
+export const POST_STATUSES = ["draft", "scheduled", "published", "archived"] as const;
 
 export type PostType = (typeof POST_TYPES)[number];
 export type PostStatus = (typeof POST_STATUSES)[number];
@@ -53,6 +53,7 @@ export interface ContentPost {
   is_featured: boolean;
   sort_order: number;
   published_at: string | null;
+  scheduled_at: string | null;
   created_at: string;
   updated_at: string;
   category?: Pick<ContentCategory, "id" | "name" | "slug"> | null;
@@ -105,7 +106,10 @@ export const postPreviewImage = (post: ContentPost): string | null => {
   return firstImage?.media_url ?? (post.media ?? [])[0]?.thumbnail_url ?? null;
 };
 
-export const postDate = (post: ContentPost) => post.published_at ?? post.created_at;
+export const postDate = (post: ContentPost) => post.published_at ?? post.scheduled_at ?? post.created_at;
+
+const effectivePublicationFilter = () =>
+  `status.eq.published,and(status.eq.scheduled,scheduled_at.lte.${new Date().toISOString()})`;
 
 /* ------------------------------- public reads ------------------------------ */
 
@@ -123,7 +127,7 @@ export const fetchPublishedPosts = async (options: { categorySlug?: string; limi
   let query = supabase
     .from("content_posts")
     .select(POST_SELECT)
-    .eq("status", "published")
+    .or(effectivePublicationFilter())
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .order("sort_order", { ascending: true });
@@ -142,7 +146,7 @@ export const fetchPublishedPostBySlug = async (slug: string): Promise<ContentPos
     .from("content_posts")
     .select(POST_SELECT)
     .eq("slug", slug)
-    .eq("status", "published")
+    .or(effectivePublicationFilter())
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
@@ -189,6 +193,7 @@ export interface PostInput {
   status: PostStatus;
   is_featured: boolean;
   published_at: string | null;
+  scheduled_at: string | null;
 }
 
 export const createPost = async (input: PostInput): Promise<ContentPost> => {

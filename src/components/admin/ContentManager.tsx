@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import ContentPostForm from "@/components/admin/ContentPostForm";
+import { formatColomboDateTime } from "@/lib/scheduling";
 import { useAdminCategories, useAdminPosts } from "@/hooks/useContent";
 import {
   POST_TYPES,
@@ -16,10 +17,11 @@ import {
   type PostStatus,
 } from "@/lib/content";
 
-type View = "all" | "published" | "draft" | "featured";
+type View = "all" | "published" | "scheduled" | "draft";
 
 const statusStyles: Record<string, string> = {
   published: "bg-green-500/20 text-green-400",
+  scheduled: "bg-blue-500/20 text-blue-400",
   draft: "bg-accent/20 text-accent",
   archived: "bg-muted text-muted-foreground",
 };
@@ -47,7 +49,7 @@ const ContentManager = () => {
       posts.filter((post) => {
         if (view === "published" && post.status !== "published") return false;
         if (view === "draft" && post.status !== "draft") return false;
-        if (view === "featured" && !post.is_featured) return false;
+        if (view === "scheduled" && post.status !== "scheduled") return false;
         if (typeFilter !== "all" && post.post_type !== typeFilter) return false;
         if (categoryFilter !== "all" && post.category_id !== categoryFilter) return false;
         if (statusFilter !== "all" && post.status !== statusFilter) return false;
@@ -70,7 +72,11 @@ const ContentManager = () => {
 
   const setStatus = async (post: ContentPost, status: PostStatus) => {
     try {
-      await updatePost(post.id, { status });
+      await updatePost(post.id, {
+        status,
+        scheduled_at: null,
+        ...(status === "published" ? { published_at: new Date().toISOString() } : {}),
+      });
       refresh();
       toast({ title: `Post ${status}` });
     } catch (error) {
@@ -90,8 +96,8 @@ const ContentManager = () => {
   const counts = {
     all: posts.length,
     published: posts.filter((p) => p.status === "published").length,
+    scheduled: posts.filter((p) => p.status === "scheduled").length,
     draft: posts.filter((p) => p.status === "draft").length,
-    featured: posts.filter((p) => p.is_featured).length,
   };
 
   return (
@@ -102,7 +108,7 @@ const ContentManager = () => {
       </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
-        {(["all", "published", "draft", "featured"] as View[]).map((key) => (
+        {(["all", "published", "scheduled", "draft"] as View[]).map((key) => (
           <button
             key={key}
             type="button"
@@ -132,6 +138,7 @@ const ContentManager = () => {
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="h-10 rounded-md border border-border bg-secondary px-3 text-sm text-foreground">
           <option value="all">All statuses</option>
           <option value="published">Published</option>
+          <option value="scheduled">Scheduled</option>
           <option value="draft">Draft</option>
           <option value="archived">Archived</option>
         </select>
@@ -159,11 +166,16 @@ const ContentManager = () => {
                     className={`rounded-full px-2 py-1 text-xs font-medium ${statusStyles[post.status] ?? ""}`}
                   >
                     <option value="draft">draft</option>
+                    {post.status === "scheduled" && <option value="scheduled">scheduled</option>}
                     <option value="published">published</option>
                     <option value="archived">archived</option>
                   </select>
                 </td>
-                <td className="p-4 text-muted-foreground">{new Date(postDate(post)).toLocaleDateString()}</td>
+                <td className="p-4 text-muted-foreground">
+                  {post.status === "scheduled"
+                    ? formatColomboDateTime(post.scheduled_at)
+                    : new Date(postDate(post)).toLocaleDateString()}
+                </td>
                 <td className="p-4">
                   <Button size="sm" variant="ghost" aria-label="Toggle featured" onClick={() => void toggleFeatured(post)} className={post.is_featured ? "text-accent" : "text-muted-foreground"}>
                     <Star size={16} fill={post.is_featured ? "currentColor" : "none"} />

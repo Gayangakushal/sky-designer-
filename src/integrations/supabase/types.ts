@@ -137,6 +137,7 @@ export type Database = {
           is_featured: boolean
           post_type: string
           published_at: string | null
+          scheduled_at: string | null
           services: string[]
           slug: string
           sort_order: number
@@ -159,6 +160,7 @@ export type Database = {
           is_featured?: boolean
           post_type?: string
           published_at?: string | null
+          scheduled_at?: string | null
           services?: string[]
           slug: string
           sort_order?: number
@@ -181,6 +183,7 @@ export type Database = {
           is_featured?: boolean
           post_type?: string
           published_at?: string | null
+          scheduled_at?: string | null
           services?: string[]
           slug?: string
           sort_order?: number

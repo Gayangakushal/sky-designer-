@@ -1,4 +1,4 @@
-export type BlogStatus = "draft" | "published";
+export type BlogStatus = "draft" | "scheduled" | "published";
 
 export interface BlogCategory {
   id: number;
@@ -24,6 +24,7 @@ export interface BlogPost {
   seo_title: string | null;
   seo_description: string | null;
   published_at: string | null;
+  scheduled_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -59,4 +60,5 @@ export interface BlogPostInput {
   seo_title: string;
   seo_description: string;
   published_at: string | null;
+  scheduled_at: string | null;
 }

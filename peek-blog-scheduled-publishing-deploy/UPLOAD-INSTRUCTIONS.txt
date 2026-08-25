@@ -1,0 +1,24 @@
+Upload to PEEK Hosting:
+
+admin/bootstrap.php
+→ /api/blog/admin/bootstrap.php
+
+admin/create.php
+→ /api/blog/admin/create.php
+
+admin/update.php
+→ /api/blog/admin/update.php
+
+public-bootstrap.php
+→ /api/blog/public-bootstrap.php
+
+posts.php
+→ /api/blog/posts.php
+
+post.php
+→ /api/blog/post.php
+
+categories.php
+→ /api/blog/categories.php
+
+Replace the existing files with these updated versions.

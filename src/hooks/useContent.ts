@@ -11,10 +11,10 @@ export const contentCategoriesQuery = () =>
   queryOptions({ queryKey: ["content_categories"], queryFn: fetchCategories, staleTime: 60_000 });
 
 export const publishedContentPostsQuery = (limit?: number) =>
-  queryOptions({ queryKey: ["content_posts", "published", limit ?? "all"], queryFn: () => fetchPublishedPosts(limit ? { limit } : {}), staleTime: 60_000 });
+  queryOptions({ queryKey: ["content_posts", "published", limit ?? "all"], queryFn: () => fetchPublishedPosts(limit ? { limit } : {}), staleTime: 30_000, refetchInterval: 60_000, refetchOnWindowFocus: true });
 
 export const publishedContentPostQuery = (slug: string) =>
-  queryOptions({ queryKey: ["content_posts", "published", "slug", slug], queryFn: () => fetchPublishedPostBySlug(slug), staleTime: 60_000 });
+  queryOptions({ queryKey: ["content_posts", "published", "slug", slug], queryFn: () => fetchPublishedPostBySlug(slug), staleTime: 30_000, refetchInterval: 60_000, refetchOnWindowFocus: true });
 
 export const useContentCategories = () => useQuery(contentCategoriesQuery());
 
