@@ -1,19 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import WorkDetail from "@/pages/WorkDetail";
-
-const title = "Work | Sky Designers Creative Showcase";
-const description = "Campaign, design, video and digital project details from the Sky Designers creative team.";
+import { publishedContentPostQuery, publishedContentPostsQuery } from "@/hooks/useContent";
+import { postPreviewImage } from "@/lib/content";
+import { cleanDescription, createSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/work/$slug")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  loader: async ({ context, params }) => {
+    const post = await context.queryClient.ensureQueryData(publishedContentPostQuery(params.slug));
+    if (!post) throw notFound();
+    void context.queryClient.ensureQueryData(publishedContentPostsQuery());
+    return post;
+  },
+  head: ({ loaderData, params }) => {
+    const title = loaderData ? `${loaderData.title} | Sky Designers Work` : "Creative Work | Sky Designers";
+    const description = cleanDescription(loaderData?.excerpt || loaderData?.content || "", "Explore campaign, design, video and digital project work by Sky Designers in Sri Lanka.");
+    return createSeoHead({ title, description, path: `/work/${params.slug}`, image: loaderData ? postPreviewImage(loaderData) : null, type: "article" });
+  },
   component: WorkDetail,
 });

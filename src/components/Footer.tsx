@@ -116,10 +116,11 @@ const Footer = () => {
               </h3>
               <div className="mt-6 grid gap-3 text-sm font-semibold text-slate-300">
                 {services.slice(0, 5).map((service) => (
-                  <a key={service.title} href="/#services" className="transition hover:text-white">
+                  <Link key={service.title} to={`/services/${service.slug}`} className="transition hover:text-white">
                     {service.shortTitle}
-                  </a>
+                  </Link>
                 ))}
+                <Link to="/services" className="font-bold text-blue-300 transition hover:text-white">All services</Link>
               </div>
             </div>
 

@@ -55,6 +55,7 @@ export const company = {
 
 export const services = [
   {
+    slug: "performance-advertising",
     icon: Target,
     title: "Performance Advertising",
     shortTitle: "Meta Ads",
@@ -68,6 +69,7 @@ export const services = [
     ],
   },
   {
+    slug: "social-media-management",
     icon: Share2,
     title: "Social Media Management",
     shortTitle: "Social Media",
@@ -76,6 +78,7 @@ export const services = [
     features: ["Content calendars", "Page management", "Community support", "Monthly reporting"],
   },
   {
+    slug: "branding-creative-design",
     icon: Palette,
     title: "Branding & Creative Design",
     shortTitle: "Creative Design",
@@ -84,6 +87,7 @@ export const services = [
     features: ["Brand identity", "Campaign design", "Social creatives", "Visual guidelines"],
   },
   {
+    slug: "video-content-production",
     icon: Clapperboard,
     title: "Video & Content Production",
     shortTitle: "Video Production",
@@ -92,6 +96,7 @@ export const services = [
     features: ["Concept development", "Production planning", "Editing", "Motion graphics"],
   },
   {
+    slug: "website-design-development",
     icon: Braces,
     title: "Website Design & Development",
     shortTitle: "Web Development",
@@ -105,6 +110,7 @@ export const services = [
     ],
   },
   {
+    slug: "digital-strategy-growth",
     icon: BarChart3,
     title: "Digital Strategy & Growth",
     shortTitle: "Strategy",

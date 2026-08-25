@@ -8,12 +8,11 @@ import { MOTION } from "@/lib/motion";
 
 /**
  * Homepage "Latest Work" band: editorial mixed-size grid built from the
- * six most recent published content posts (featured first).
+ * six most recent published content posts.
  */
 const LatestWorkSection = () => {
-  const { data: posts = [], isLoading } = usePublishedPosts(6);
-
-  if (!isLoading && posts.length === 0) return null;
+  const { data: posts = [], isLoading, isFetching } = usePublishedPosts(6);
+  const waitingForPosts = posts.length === 0 && (isLoading || isFetching);
 
   return (
     <section id="portfolio" className="section-space bg-[#030713] text-white">
@@ -33,7 +32,7 @@ const LatestWorkSection = () => {
           </Link>
         </div>
 
-        {isLoading ? (
+        {waitingForPosts ? (
           <div className="mt-14 grid gap-5 lg:grid-cols-12">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
@@ -42,7 +41,7 @@ const LatestWorkSection = () => {
               />
             ))}
           </div>
-        ) : (
+        ) : posts.length > 0 ? (
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-12">
             {posts.map((post, index) => {
               // Alternating editorial rhythm: wide / narrow, narrow / wide.
@@ -57,6 +56,13 @@ const LatestWorkSection = () => {
                 </MotionReveal>
               );
             })}
+          </div>
+        ) : (
+          <div className="mt-14 rounded-[24px] border border-white/10 bg-white/5 px-6 py-10 text-center">
+            <p className="text-sm text-slate-300">Our latest projects are being updated.</p>
+            <Link to="/work" className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-blue-300">
+              View All Work <ArrowUpRight size={16} />
+            </Link>
           </div>
         )}
       </div>

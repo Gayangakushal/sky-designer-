@@ -1,17 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import JobDetail from "@/pages/JobDetail";
-
-const title = "Job Opening | Careers at Sky Designers";
-const description = "Role details, responsibilities and application form for this Sky Designers opening.";
+import { publicVacancyQuery } from "@/hooks/useVacancies";
+import { cleanDescription, createSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/careers/$jobSlug")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-    ],
-  }),
+  loader: async ({ context, params }) => {
+    const vacancy = await context.queryClient.ensureQueryData(publicVacancyQuery(params.jobSlug));
+    if (!vacancy) throw notFound();
+    return vacancy;
+  },
+  head: ({ loaderData, params }) => {
+    const title = loaderData ? `${loaderData.title} Job | Careers at Sky Designers` : "Job Opening | Sky Designers";
+    const description = cleanDescription(loaderData?.short_description || loaderData?.description || "", "View this open role and apply to join the Sky Designers team in Sri Lanka.");
+    return createSeoHead({ title, description, path: `/careers/${params.jobSlug}` });
+  },
   component: JobDetail,
 });

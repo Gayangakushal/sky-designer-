@@ -12,7 +12,8 @@ const Work = () => {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
   const { data: categories = [] } = useContentCategories();
-  const { data: posts = [], isLoading } = usePublishedPosts();
+  const { data: posts = [], isLoading, isFetching } = usePublishedPosts();
+  const waitingForPosts = posts.length === 0 && (isLoading || isFetching);
 
   const filters = useMemo(
     () => [
@@ -59,7 +60,7 @@ const Work = () => {
             ))}
           </div>
 
-          {isLoading ? (
+          {waitingForPosts ? (
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div

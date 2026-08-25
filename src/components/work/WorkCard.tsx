@@ -28,10 +28,11 @@ const WorkCard = ({ post, large = false }: WorkCardProps) => {
             src={image}
             alt={post.title}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.04]"
           />
         ) : post.post_type === "video" && post.video_url ? (
-          <video src={post.video_url} className="h-full w-full object-cover" muted playsInline />
+          <video src={post.video_url} preload="none" className="h-full w-full object-cover" muted playsInline />
         ) : (
           <div className="grid h-full w-full place-items-center">
             <ImageIcon className="h-10 w-10 text-slate-600" />

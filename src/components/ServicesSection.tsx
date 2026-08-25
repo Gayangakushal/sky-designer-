@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import SectionHeading from "@/components/common/SectionHeading";
 import { services } from "@/data/siteData";
 import { MOTION } from "@/lib/motion";
+import { Link } from "@/lib/router-compat";
 
 const ServicesSection = ({ onBookCall }: { onBookCall: () => void }) => {
   const prefersReducedMotion = useReducedMotion();
@@ -58,7 +59,7 @@ const ServicesSection = ({ onBookCall }: { onBookCall: () => void }) => {
           }}
           className="mt-14 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6"
         >
-          {services.map(({ icon: Icon, title, description, features }) => (
+          {services.map(({ slug, icon: Icon, title, description, features }) => (
             <motion.article
               key={title}
               variants={{
@@ -102,9 +103,8 @@ const ServicesSection = ({ onBookCall }: { onBookCall: () => void }) => {
                 ))}
               </ul>
 
-              <button
-                type="button"
-                onClick={onBookCall}
+              <Link
+                to={`/services/${slug}`}
                 className="relative mt-auto inline-flex w-fit items-center gap-2 pt-8 text-sm font-extrabold text-blue-300 transition-colors hover:text-white"
               >
                 Explore service
@@ -113,7 +113,7 @@ const ServicesSection = ({ onBookCall }: { onBookCall: () => void }) => {
                   className="transition-transform duration-300 group-hover:translate-x-1"
                   aria-hidden="true"
                 />
-              </button>
+              </Link>
             </motion.article>
           ))}
         </motion.div>

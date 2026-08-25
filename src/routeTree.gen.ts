@@ -13,12 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GraphicDesignRouteImport } from './routes/graphic-design'
 import { Route as PackagesRouteImport } from './routes/packages'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as CareersIndexRouteImport } from './routes/careers.index'
 import { Route as CareersJobSlugRouteImport } from './routes/careers.$jobSlug'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as WorkIndexRouteImport } from './routes/work.index'
 import { Route as WorkSlugRouteImport } from './routes/work.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -43,6 +46,11 @@ const PackagesRoute = PackagesRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -73,6 +81,16 @@ const CareersIndexRoute = CareersIndexRouteImport.update({
 const CareersJobSlugRoute = CareersJobSlugRouteImport.update({
   id: '/careers/$jobSlug',
   path: '/careers/$jobSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/services/$slug',
+  path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorkIndexRoute = WorkIndexRouteImport.update({
@@ -106,13 +124,16 @@ export interface FileRoutesByFullPath {
   '/graphic-design': typeof GraphicDesignRoute
   '/packages': typeof PackagesRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/work/$slug': typeof WorkSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/careers/': typeof CareersIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/work/': typeof WorkIndexRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -123,13 +144,16 @@ export interface FileRoutesByTo {
   '/graphic-design': typeof GraphicDesignRoute
   '/packages': typeof PackagesRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/work/$slug': typeof WorkSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/careers': typeof CareersIndexRoute
+  '/services': typeof ServicesIndexRoute
   '/work': typeof WorkIndexRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/blog': typeof AdminBlogIndexRoute
@@ -141,13 +165,16 @@ export interface FileRoutesById {
   '/graphic-design': typeof GraphicDesignRoute
   '/packages': typeof PackagesRoute
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/work/$slug': typeof WorkSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/careers/': typeof CareersIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/work/': typeof WorkIndexRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -160,13 +187,16 @@ export interface FileRouteTypes {
     | '/graphic-design'
     | '/packages'
     | '/privacy'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/blog/$slug'
     | '/careers/$jobSlug'
+    | '/services/$slug'
     | '/work/$slug'
     | '/admin/'
     | '/blog/'
     | '/careers/'
+    | '/services/'
     | '/work/'
     | '/admin/blog/new'
     | '/admin/blog/'
@@ -177,13 +207,16 @@ export interface FileRouteTypes {
     | '/graphic-design'
     | '/packages'
     | '/privacy'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/blog/$slug'
     | '/careers/$jobSlug'
+    | '/services/$slug'
     | '/work/$slug'
     | '/admin'
     | '/blog'
     | '/careers'
+    | '/services'
     | '/work'
     | '/admin/blog/new'
     | '/admin/blog'
@@ -194,13 +227,16 @@ export interface FileRouteTypes {
     | '/graphic-design'
     | '/packages'
     | '/privacy'
+    | '/sitemap.xml'
     | '/admin/login'
     | '/blog/$slug'
     | '/careers/$jobSlug'
+    | '/services/$slug'
     | '/work/$slug'
     | '/admin/'
     | '/blog/'
     | '/careers/'
+    | '/services/'
     | '/work/'
     | '/admin/blog/new'
     | '/admin/blog/'
@@ -212,13 +248,16 @@ export interface RootRouteChildren {
   GraphicDesignRoute: typeof GraphicDesignRoute
   PackagesRoute: typeof PackagesRoute
   PrivacyRoute: typeof PrivacyRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CareersJobSlugRoute: typeof CareersJobSlugRoute
+  ServicesSlugRoute: typeof ServicesSlugRoute
   WorkSlugRoute: typeof WorkSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   CareersIndexRoute: typeof CareersIndexRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
   WorkIndexRoute: typeof WorkIndexRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
@@ -253,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -295,6 +341,20 @@ declare module '@tanstack/react-router' {
       path: '/careers/$jobSlug'
       fullPath: '/careers/$jobSlug'
       preLoaderRoute: typeof CareersJobSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/services/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/work/': {
@@ -340,13 +400,16 @@ const rootRouteChildren: RootRouteChildren = {
   GraphicDesignRoute: GraphicDesignRoute,
   PackagesRoute: PackagesRoute,
   PrivacyRoute: PrivacyRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
   BlogSlugRoute: BlogSlugRoute,
   CareersJobSlugRoute: CareersJobSlugRoute,
+  ServicesSlugRoute: ServicesSlugRoute,
   WorkSlugRoute: WorkSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   CareersIndexRoute: CareersIndexRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
   WorkIndexRoute: WorkIndexRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,

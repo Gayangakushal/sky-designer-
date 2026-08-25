@@ -5,11 +5,12 @@ const AnimatedCounter = ({ value, suffix = "" }: { value: number; suffix?: strin
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
   const reduceMotion = useReducedMotion();
-  const [display, setDisplay] = useState(reduceMotion ? value : 0);
+  const [display, setDisplay] = useState(value);
 
   useEffect(() => {
     if (!inView) return;
     if (reduceMotion) { setDisplay(value); return; }
+    setDisplay(0);
     const start = performance.now();
     let frame = 0;
     const update = (time: number) => {
@@ -21,7 +22,7 @@ const AnimatedCounter = ({ value, suffix = "" }: { value: number; suffix?: strin
     return () => cancelAnimationFrame(frame);
   }, [inView, reduceMotion, value]);
 
-  return <span ref={ref}>{display}{suffix}</span>;
+  return <span ref={ref}><span className="sr-only">{value}{suffix}</span><span aria-hidden="true">{display}{suffix}</span></span>;
 };
 
 export default AnimatedCounter;

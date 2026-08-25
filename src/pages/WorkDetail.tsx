@@ -43,6 +43,7 @@ const PostMedia = ({
       <video
         src={post.video_url}
         poster={post.cover_image_url ?? undefined}
+        preload="metadata"
         controls
         playsInline
         className="w-full rounded-[24px] border border-white/10 bg-black"
@@ -58,7 +59,7 @@ const PostMedia = ({
       onClick={() => onOpenGallery(0)}
       className="block w-full overflow-hidden rounded-[24px] border border-white/10"
     >
-      <img src={cover} alt={post.title} className="w-full object-cover" />
+      <img src={cover} alt={post.title} decoding="async" className="w-full object-cover" />
     </button>
   );
 };
@@ -174,6 +175,7 @@ const WorkDetail = () => {
                   {post.post_type === "project" && post.video_url && (
                     <video
                       src={post.video_url}
+                      preload="metadata"
                       controls
                       playsInline
                       className="mt-8 w-full rounded-[24px] border border-white/10 bg-black"
@@ -184,6 +186,7 @@ const WorkDetail = () => {
                     <video
                       key={media.id}
                       src={media.media_url}
+                      preload="metadata"
                       controls
                       playsInline
                       className="mt-6 w-full rounded-[24px] border border-white/10 bg-black"
@@ -286,7 +289,7 @@ const WorkDetail = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               src={gallery[Math.max(0, Math.min(lightbox, gallery.length - 1))]}
-              alt=""
+              alt={`${post?.title || "Sky Designers project"} gallery image`}
               className="max-h-[80vh] w-auto max-w-full rounded-2xl object-contain"
             />
             {gallery.length > 1 && (

@@ -124,9 +124,9 @@ export const fetchPublishedPosts = async (options: { categorySlug?: string; limi
     .from("content_posts")
     .select(POST_SELECT)
     .eq("status", "published")
-    .order("is_featured", { ascending: false })
     .order("published_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("sort_order", { ascending: true });
   if (options.limit) query = query.limit(options.limit);
   const { data, error } = await query;
   if (error) throw error;

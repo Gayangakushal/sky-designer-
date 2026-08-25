@@ -15,8 +15,9 @@ const BlogCard = ({ post, compact = false }: { post: BlogPost; compact?: boolean
         {image ? (
           <img
             src={image}
-            alt=""
+            alt={`Featured image for ${post.title}`}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
           />
         ) : (

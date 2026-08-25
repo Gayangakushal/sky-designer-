@@ -9,7 +9,7 @@ const stats = [
 ];
 
 const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
-  const [count, setCount] = useState(value === 2020 ? 2020 : 0);
+  const [count, setCount] = useState(value);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const reduceMotion = useReducedMotion();
@@ -26,6 +26,7 @@ const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
       ([entry]) => {
         if (!entry.isIntersecting || started.current) return;
         started.current = true;
+        setCount(0);
         const start = performance.now();
         const duration = 1200;
         const update = (time: number) => {
@@ -46,8 +47,8 @@ const Counter = ({ value, suffix }: { value: number; suffix: string }) => {
       ref={ref}
       className="font-heading text-4xl font-extrabold tracking-[-0.05em] text-white sm:text-5xl"
     >
-      {count}
-      {suffix}
+      <span className="sr-only">{value}{suffix}</span>
+      <span aria-hidden="true">{count}{suffix}</span>
     </div>
   );
 };

@@ -22,6 +22,7 @@ import PublicMotionLayer from "@/components/common/PublicMotionLayer";
 import FloatingContactActions from "@/components/common/FloatingContactActions";
 import AnalyticsRouteTracker from "@/components/common/AnalyticsRouteTracker";
 import { MOTION } from "@/lib/motion";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const GTM_ID = "GTM-PF4J4JNC";
 const META_PIXEL_ID = "1070145265420068";
@@ -110,8 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#030713" },
       { name: "author", content: "Sky Designers" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "format-detection", content: "telephone=yes" },
     ],
     links: [
       {
@@ -126,6 +126,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+    ],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(organizationJsonLd) },
+      { type: "application/ld+json", children: JSON.stringify(websiteJsonLd) },
     ],
   }),
   shellComponent: RootShell,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, CalendarDays, Clock3 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,18 +17,6 @@ const BlogDetail = () => {
   const { slug = "" } = useParams<{ slug: string }>();
   const [bookingOpen, setBookingOpen] = useState(false);
   const { data: post, isLoading, error, refetch } = useBlogPost(slug);
-
-  useEffect(() => {
-    if (!post) return;
-    document.title = post.seo_title || post.title;
-    let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.name = "description";
-      document.head.appendChild(meta);
-    }
-    meta.content = post.seo_description || post.excerpt || "Sky Designers insight";
-  }, [post]);
 
   const notFound = error instanceof BlogApiError && error.status === 404;
   const { url: image } = useBlogImageUrl(post?.featured_image);
@@ -129,6 +117,9 @@ const BlogDetail = () => {
                   <img
                     src={image}
                     alt={post.title}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     className="mb-12 aspect-[16/8] w-full rounded-3xl object-cover shadow-xl"
                   />
                 )}

@@ -95,7 +95,10 @@ const Blog = () => {
                       {featuredImage ? (
                         <img
                           src={featuredImage}
-                          alt=""
+                          alt={`Featured insight: ${featured.title}`}
+                          loading="eager"
+                          fetchPriority="high"
+                          decoding="async"
                           className="absolute inset-0 h-full w-full object-cover"
                         />
                       ) : (
