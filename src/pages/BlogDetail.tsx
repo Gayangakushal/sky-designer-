@@ -13,7 +13,29 @@ import {
 } from "@/lib/blog-api";
 import { useBlogImageUrl } from "@/hooks/useBlogImageUrl";
 import { inferServicePagesFromText } from "@/lib/service-links";
+import { getExistingBlogSeoProfile, type BlogResourceLink } from "@/data/existingBlogSeo";
 import { founder, team } from "@/data/siteData";
+
+const ResourceGroup = ({ title, links }: { title: string; links: BlogResourceLink[] }) => {
+  if (links.length === 0) return null;
+  return (
+    <section>
+      <h3 className="text-xs font-extrabold uppercase tracking-[0.16em] text-slate-500">{title}</h3>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            to={link.href}
+            className="rounded-xl border border-slate-200 bg-white p-4 transition hover:border-blue-300 hover:shadow-sm"
+          >
+            <span className="block text-sm font-bold text-primary">{link.label}</span>
+            <span className="mt-1 block text-xs leading-5 text-slate-600">{link.description}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 const BlogDetail = () => {
   const { slug = "" } = useParams<{ slug: string }>();
@@ -21,18 +43,29 @@ const BlogDetail = () => {
   const { data: post, isLoading, error, refetch } = useBlogPost(slug);
 
   const notFound = error instanceof BlogApiError && error.status === 404;
+  const seoProfile = getExistingBlogSeoProfile(slug);
   const { url: image } = useBlogImageUrl(post?.featured_image);
   const relatedServices = post
     ? inferServicePagesFromText(
-        [post.title, post.excerpt, post.category_name, post.category?.name].filter(Boolean).join(" "),
+        [post.title, post.excerpt, post.category_name, post.category?.name]
+          .filter(Boolean)
+          .join(" "),
       ).slice(0, 3)
     : [];
   const publishedDate = post?.published_at || post?.created_at;
-  const authorRole = post?.author_name
+  const knownAuthor = post?.author_name
     ? [founder, ...team].find(
         (person) => person.name.toLowerCase() === post.author_name?.trim().toLowerCase(),
-      )?.role
+      )
     : undefined;
+  const authorRole = knownAuthor?.role;
+  const serviceLinks: BlogResourceLink[] = seoProfile
+    ? seoProfile.serviceLinks
+    : relatedServices.map((service) => ({
+        label: service.title,
+        href: `/services/${service.slug}`,
+        description: service.description,
+      }));
   const readingMinutes = post
     ? Math.max(
         1,
@@ -114,7 +147,21 @@ const BlogDetail = () => {
                   )}
                   <div className="mt-8 flex flex-wrap gap-5 text-sm text-slate-400">
                     <span>
-                      By {post.author_name || <Link to="/about" className="font-semibold text-blue-200">Sky Designers</Link>}
+                      By{" "}
+                      {knownAuthor ? (
+                        <Link to="/about" className="font-semibold text-blue-200 hover:text-white">
+                          {post.author_name}
+                        </Link>
+                      ) : (
+                        post.author_name || (
+                          <Link
+                            to="/about"
+                            className="font-semibold text-blue-200 hover:text-white"
+                          >
+                            Sky Designers
+                          </Link>
+                        )
+                      )}
                       {authorRole ? `, ${authorRole}` : ""}
                     </span>
                     <span className="inline-flex items-center gap-2">
@@ -137,7 +184,7 @@ const BlogDetail = () => {
                 {image && (
                   <img
                     src={image}
-                    alt={post.title}
+                    alt={seoProfile?.imageAlt || `Featured image for ${post.title}`}
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
@@ -148,23 +195,45 @@ const BlogDetail = () => {
                   className="blog-prose"
                   dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(post.content) }}
                 />
-                <aside className="mt-12 rounded-[24px] border border-slate-200 bg-slate-50 p-6 sm:p-8" aria-labelledby="related-resources-heading">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary">Related resources</p>
-                  <h2 id="related-resources-heading" className="mt-3 font-heading text-2xl font-bold text-slate-950">Explore this topic with Sky Designers</h2>
-                  {relatedServices.length > 0 && (
-                    <div className="mt-5 flex flex-wrap gap-3">
-                      {relatedServices.map((service) => (
-                        <Link key={service.slug} to={`/services/${service.slug}`} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-primary">
-                          {service.title}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                  <p className="mt-5 text-sm leading-7 text-slate-600">
-                    Review <Link to="/work" className="font-bold text-primary">published work and case studies</Link>,
-                    browse <Link to="/services" className="font-bold text-primary">all services</Link>, or
-                    learn <Link to="/about" className="font-bold text-primary">about Sky Designers</Link>.
+                <aside
+                  className="mt-12 rounded-[24px] border border-slate-200 bg-slate-50 p-6 sm:p-8"
+                  aria-labelledby="related-resources-heading"
+                >
+                  <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary">
+                    {seoProfile?.cluster || "Related resources"}
                   </p>
+                  <h2
+                    id="related-resources-heading"
+                    className="mt-3 font-heading text-2xl font-bold text-slate-950"
+                  >
+                    Continue with relevant services and evidence
+                  </h2>
+                  {seoProfile?.intent && (
+                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                      This article supports readers researching {seoProfile.intent.toLowerCase()}.
+                    </p>
+                  )}
+                  <div className="mt-6 grid gap-7">
+                    <ResourceGroup title="Related service" links={serviceLinks} />
+                    <ResourceGroup title="Related work" links={seoProfile?.workLinks ?? []} />
+                    <ResourceGroup
+                      title="Related insights"
+                      links={seoProfile?.articleLinks ?? []}
+                    />
+                  </div>
+                  {!seoProfile && (
+                    <p className="mt-5 text-sm leading-7 text-slate-600">
+                      Review{" "}
+                      <Link to="/work" className="font-bold text-primary">
+                        published work and case studies
+                      </Link>{" "}
+                      or browse{" "}
+                      <Link to="/services" className="font-bold text-primary">
+                        all services
+                      </Link>
+                      .
+                    </p>
+                  )}
                 </aside>
                 <div className="mt-14 border-t border-slate-200 pt-8">
                   <Link

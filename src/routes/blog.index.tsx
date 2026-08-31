@@ -3,8 +3,8 @@ import Blog from "@/pages/Blog";
 import { publishedBlogPostsQuery } from "@/hooks/useBlog";
 import { createSeoHead } from "@/lib/seo";
 
-const title = "Digital Marketing Blog & Insights | Sky Designers";
-const description = "Practical guidance on digital marketing, social media, advertising, branding, websites and business growth from the Sky Designers team in Sri Lanka.";
+const title = "Digital Marketing Insights Sri Lanka | Sky Designers";
+const description = "Read practical digital marketing insights from Sri Lanka on social media, advertising, branding, websites and business growth from Sky Designers.";
 
 export const Route = createFileRoute("/blog/")({
   loader: async ({ context }) => {

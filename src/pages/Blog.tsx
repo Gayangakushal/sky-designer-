@@ -45,11 +45,11 @@ const Blog = () => {
                 Blog / Insights
               </p>
               <h1 className="mt-5 max-w-4xl font-heading text-4xl font-extrabold leading-[1.06] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
-                Insights for Brands <span className="text-gradient-primary">Ready to Grow.</span>
+                Digital Marketing Insights <span className="text-gradient-primary">for Sri Lankan Brands.</span>
               </h1>
               <p className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
                 Practical ideas on digital marketing, branding, social media, advertising,
-                technology, and business growth.
+                websites and business growth from the Sky Designers team.
               </p>
             </MotionReveal>
           </div>
@@ -132,16 +132,26 @@ const Blog = () => {
                 </MotionReveal>
               )}
               {remaining.length > 0 && (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {remaining.map((post, index) => (
-                    <MotionReveal key={post.id} delay={Math.min(index * 0.05, 0.2)}>
-                      <BlogCard post={post} />
-                    </MotionReveal>
-                  ))}
-                </div>
+                <section aria-labelledby="latest-insights-heading">
+                  <h2 id="latest-insights-heading" className="sr-only">Latest digital marketing insights</h2>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {remaining.map((post, index) => (
+                      <MotionReveal key={post.id} delay={Math.min(index * 0.05, 0.2)}>
+                        <BlogCard post={post} />
+                      </MotionReveal>
+                    ))}
+                  </div>
+                </section>
               )}
             </>
           )}
+          <aside className="mt-16 rounded-[24px] border border-slate-200 bg-slate-50 p-6 sm:p-8" aria-labelledby="blog-services-heading">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-primary">Put the insights into practice</p>
+            <h2 id="blog-services-heading" className="mt-3 font-heading text-2xl font-bold text-slate-950">Explore related digital marketing resources</h2>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
+              See how Sky Designers supports businesses through <Link to="/services/performance-advertising" className="font-bold text-primary">performance marketing and Meta Ads</Link>, <Link to="/services/social-media-management" className="font-bold text-primary">social media management</Link>, and <Link to="/services/branding-creative-design" className="font-bold text-primary">branding and creative design</Link>. You can also review <Link to="/work" className="font-bold text-primary">digital marketing work and case studies</Link>.
+            </p>
+          </aside>
         </section>
       </main>
       <Footer />

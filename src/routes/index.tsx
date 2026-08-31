@@ -3,9 +3,9 @@ import Index from "@/pages/Index";
 import { createSeoHead } from "@/lib/seo";
 import { publishedContentPostsQuery } from "@/hooks/useContent";
 
-const title = "Sky Designers | Digital Marketing & Creative Agency Sri Lanka";
+const title = "Digital Marketing Agency Sri Lanka | Sky Designers";
 const description =
-  "Sky Designers is a Sri Lankan digital marketing and creative agency for social media, Meta ads, branding, content production, and web development.";
+  "Sky Designers is a digital marketing agency in Sri Lanka providing social media marketing, Meta ads, branding, content production and web development.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {

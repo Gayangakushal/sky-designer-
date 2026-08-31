@@ -107,7 +107,7 @@ const ServicesSection = ({ onBookCall }: { onBookCall: () => void }) => {
                 to={`/services/${slug}`}
                 className="relative mt-auto inline-flex w-fit items-center gap-2 pt-8 text-sm font-extrabold text-blue-300 transition-colors hover:text-white"
               >
-                Explore service
+                Explore {title}
                 <ArrowRight
                   size={16}
                   className="transition-transform duration-300 group-hover:translate-x-1"

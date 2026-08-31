@@ -13,7 +13,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
   const isMobile = useIsMobile();
   const { settings } = useSiteSettings();
   const heroSettings = settings["hero"] ?? {};
-  const headingWords = (heroSettings["heading"] || "Full-Service Digital Growth Partner")
+  const headingWords = (heroSettings["heading"] || "Digital Marketing Agency in Sri Lanka")
     .trim()
     .split(/\s+/);
   const headingSplit = Math.ceil(headingWords.length / 2);
@@ -175,7 +175,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
             className="mt-7 max-w-2xl text-balance text-sm leading-7 text-slate-200/85 sm:text-lg sm:leading-8"
           >
             {heroSettings["description"] ||
-              "We craft data-driven strategies that transform brands and deliver measurable growth across every digital channel."}
+              "One connected Sri Lankan team for digital strategy, performance advertising, social media marketing, branding, content and web development."}
           </motion.p>
 
           <motion.div

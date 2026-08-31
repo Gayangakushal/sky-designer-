@@ -5,6 +5,7 @@ import { BlogApiError } from "@/lib/blog-api";
 import { resolveBlogImageUrl } from "@/lib/blog-images";
 import { absoluteUrl, cleanDescription, createSeoHead, SITE_URL } from "@/lib/seo";
 import { founder, team } from "@/data/siteData";
+import { getExistingBlogSeoProfile } from "@/data/existingBlogSeo";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ context, params }) => {
@@ -19,10 +20,23 @@ export const Route = createFileRoute("/blog/$slug")({
   },
   head: ({ loaderData, params }) => {
     const post = loaderData?.post;
-    const title = post?.seo_title || (post ? `${post.title} | Sky Designers` : "Insight | Sky Designers");
-    const description = cleanDescription(post?.seo_description || post?.excerpt || "", "Read digital marketing and creative insights from Sky Designers in Sri Lanka.");
+    const seoProfile = getExistingBlogSeoProfile(params.slug);
+    const title =
+      seoProfile?.seoTitle ||
+      post?.seo_title ||
+      (post ? `${post.title} | Sky Designers` : "Insight | Sky Designers");
+    const description = cleanDescription(
+      seoProfile?.seoDescription || post?.seo_description || post?.excerpt || "",
+      "Read digital marketing and creative insights from Sky Designers in Sri Lanka.",
+    );
     const path = `/blog/${params.slug}`;
-    const base = createSeoHead({ title, description, path, image: loaderData?.image, type: "article" });
+    const base = createSeoHead({
+      title,
+      description,
+      path,
+      image: loaderData?.image,
+      type: "article",
+    });
     if (!post) return base;
     const published = post.published_at || post.created_at;
     const knownAuthor = post.author_name
@@ -55,9 +69,13 @@ export const Route = createFileRoute("/blog/$slug")({
       datePublished: published,
       dateModified: post.updated_at || published,
       publisher: { "@id": `${SITE_URL}/#organization` },
+      ...(seoProfile?.cluster ? { articleSection: seoProfile.cluster } : {}),
       inLanguage: "en-LK",
     };
-    return { ...base, scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }] };
+    return {
+      ...base,
+      scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
+    };
   },
   component: BlogDetail,
 });

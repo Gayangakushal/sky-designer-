@@ -7,6 +7,8 @@ import WorkCard from "@/components/work/WorkCard";
 import { useContentCategories, usePublishedPosts } from "@/hooks/useContent";
 import MotionReveal from "@/components/MotionReveal";
 import { MOTION } from "@/lib/motion";
+import { Link } from "@/lib/router-compat";
+import { servicePages } from "@/data/servicePages";
 
 const Work = () => {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -38,8 +40,8 @@ const Work = () => {
         <div className="site-container">
           <SectionHeading
             eyebrow="Portfolio"
-            title="Our Latest Work"
-            description="Explore the campaigns, designs, productions and digital experiences we create for brands."
+            title="Digital Marketing Portfolio in Sri Lanka"
+            description="Explore advertising campaigns, social media, branding, video and website projects created by Sky Designers for businesses in Sri Lanka and beyond."
             light
             as="h1"
           />
@@ -61,6 +63,14 @@ const Work = () => {
             ))}
           </div>
 
+          <nav aria-label="Explore portfolio services" className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm">
+            {servicePages.map((service) => (
+              <Link key={service.slug} to={`/services/${service.slug}`} className="font-bold text-blue-300 transition hover:text-white">
+                {service.title}
+              </Link>
+            ))}
+          </nav>
+
           {waitingForPosts ? (
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
@@ -75,13 +85,16 @@ const Work = () => {
               No published work in this category yet. New posts appear here as soon as they go live.
             </p>
           ) : (
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {visible.map((post, index) => (
-                <MotionReveal key={post.id} delay={index * MOTION.stagger}>
-                  <WorkCard post={post} />
-                </MotionReveal>
-              ))}
-            </div>
+            <section className="mt-12" aria-labelledby="portfolio-projects-heading">
+              <h2 id="portfolio-projects-heading" className="sr-only">Published digital marketing and creative projects</h2>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {visible.map((post, index) => (
+                  <MotionReveal key={post.id} delay={index * MOTION.stagger}>
+                    <WorkCard post={post} />
+                  </MotionReveal>
+                ))}
+              </div>
+            </section>
           )}
         </div>
       </main>

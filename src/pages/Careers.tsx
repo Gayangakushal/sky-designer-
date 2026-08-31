@@ -36,7 +36,7 @@ const Careers = () => {
           <div className="blue-grid absolute inset-0 opacity-30" /><div className="absolute left-[15%] top-16 h-96 w-96 rounded-full bg-primary/18 blur-[120px]" />
           <div className="site-container relative">
             <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="text-xs font-bold uppercase tracking-[0.24em] text-blue-300">Careers at Sky Designers</motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-5xl text-balance font-heading text-5xl font-extrabold leading-[1.02] tracking-[-0.06em] sm:text-6xl lg:text-8xl">Do work that gets <span className="text-gradient-primary">noticed.</span></motion.h1>
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-5xl text-balance font-heading text-5xl font-extrabold leading-[1.02] tracking-[-0.06em] sm:text-6xl lg:text-8xl">Digital marketing careers <span className="text-gradient-primary">at Sky Designers.</span></motion.h1>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">Join a growing creative team building content, campaigns, and digital experiences for ambitious brands.</motion.p>
             <motion.a href="#open-roles" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="mt-9 inline-flex min-h-14 items-center gap-3 rounded-xl bg-primary px-7 text-sm font-extrabold text-white transition hover:-translate-y-1">View open roles <ArrowRight size={18} /></motion.a>
           </div>

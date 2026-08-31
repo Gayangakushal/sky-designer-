@@ -3,9 +3,9 @@ import Careers from "@/pages/Careers";
 import { createSeoHead } from "@/lib/seo";
 import { publicVacanciesQuery } from "@/hooks/useVacancies";
 
-const title = "Careers at Sky Designers | Join Our Creative Team";
+const title = "Digital Marketing Jobs Sri Lanka | Sky Designers Careers";
 const description =
-  "Open roles at Sky Designers for marketers, designers, editors and developers who want to build brands in Sri Lanka and beyond.";
+  "Explore digital marketing and creative agency jobs at Sky Designers for marketers, designers, editors and developers in Sri Lanka.";
 
 export const Route = createFileRoute("/careers/")({
   loader: async ({ context }) => {

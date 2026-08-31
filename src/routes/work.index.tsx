@@ -3,9 +3,9 @@ import Work from "@/pages/Work";
 import { createSeoHead } from "@/lib/seo";
 import { contentCategoriesQuery, publishedContentPostsQuery } from "@/hooks/useContent";
 
-const title = "Our Latest Work | Sky Designers Portfolio";
+const title = "Digital Marketing Portfolio Sri Lanka | Sky Designers";
 const description =
-  "Explore the campaigns, designs, productions and digital experiences Sky Designers creates for brands in Sri Lanka and beyond.";
+  "Explore Sky Designers' digital marketing portfolio in Sri Lanka, including advertising campaigns, branding, social media, video and website projects.";
 
 export const Route = createFileRoute("/work/")({
   loader: async ({ context }) => {

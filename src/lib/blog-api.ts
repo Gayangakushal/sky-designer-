@@ -189,8 +189,13 @@ export const formatBlogDate = (date: string | null | undefined) => {
 };
 
 export const sanitizeBlogHtml = (html: string) => {
-  if (typeof window === "undefined") return html;
-  const documentNode = new DOMParser().parseFromString(html, "text/html");
+  // The page title is the article's only H1. Content entered with H1 tags is
+  // demoted so authored sections start at H2 and keep a logical hierarchy.
+  const normalizedHeadings = html
+    .replace(/<h1(\s[^>]*)?>/gi, (_match, attributes = "") => `<h2${attributes}>`)
+    .replace(/<\/h1>/gi, "</h2>");
+  if (typeof window === "undefined") return normalizedHeadings;
+  const documentNode = new DOMParser().parseFromString(normalizedHeadings, "text/html");
   documentNode
     .querySelectorAll("script, style, iframe, object, embed, form")
     .forEach((node) => node.remove());

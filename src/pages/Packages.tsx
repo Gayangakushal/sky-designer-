@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "@/lib/router-compat";
+import { Link, useSearchParams } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/siteData";
 
@@ -718,7 +718,7 @@ const Packages = () => {
           <div className="space-y-4">
             <p className="text-sm uppercase tracking-[0.3em] text-sky-200">Package Selection</p>
             <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Build your ad package with confidence.
+              Meta Ads Packages in Sri Lanka
             </h1>
             <p className="max-w-3xl text-base text-slate-200 sm:text-lg">
               Choose your service category, match the right business plan, then pick the final
@@ -923,6 +923,14 @@ const Packages = () => {
             </a>
           </aside>
         </div>
+
+        <section className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur-xl" aria-labelledby="package-services-heading">
+          <p className="text-sm uppercase tracking-[0.3em] text-sky-200">Related services</p>
+          <h2 id="package-services-heading" className="mt-3 text-2xl font-semibold text-white">Plan the campaign behind your package</h2>
+          <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-200">
+            Package selection covers campaign duration and plan level. For campaign strategy, targeting, creative testing and reporting, explore Sky Designers' <Link to="/services/performance-advertising" className="font-bold text-sky-200 hover:text-white">performance marketing and Meta Ads service</Link>. Brands that also need an ongoing content plan can review <Link to="/services/social-media-management" className="font-bold text-sky-200 hover:text-white">social media management</Link> and <Link to="/services/branding-creative-design" className="font-bold text-sky-200 hover:text-white">campaign creative design</Link>.
+          </p>
+        </section>
 
         {adminPanelOpen && (
           <section className="mt-10 rounded-3xl border border-blue-400/25 bg-slate-950/40 p-6 shadow-2xl shadow-blue-500/10 backdrop-blur-xl">

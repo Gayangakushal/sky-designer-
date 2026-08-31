@@ -30,7 +30,7 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
         <div className="site-container relative">
           <Link to="/services" className="inline-flex items-center gap-2 text-sm font-bold text-blue-200"><ArrowLeft size={16} /> All services</Link>
           <Icon className="mt-10 text-blue-300" size={34} aria-hidden="true" />
-          <h1 className="mt-5 max-w-4xl font-heading text-4xl font-extrabold tracking-[-0.05em] sm:text-6xl">{service.title} in Sri Lanka</h1>
+          <h1 className="mt-5 max-w-4xl font-heading text-4xl font-extrabold tracking-[-0.05em] sm:text-6xl">{service.h1}</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">{service.introduction}</p>
         </div>
       </header>
@@ -40,6 +40,8 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
           <p className="mt-5 text-base leading-8 text-slate-600">{service.definition}</p>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">Who this service is for</h2>
           <p className="mt-5 text-base leading-8 text-slate-600">{service.idealFor}</p>
+          <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">The business problem it addresses</h2>
+          <p className="mt-5 text-base leading-8 text-slate-600">{service.businessProblem}</p>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">How Sky Designers provides the service</h2>
           <p className="mt-5 text-base leading-8 text-slate-600">{service.approach}</p>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">What the service covers</h2>
@@ -49,7 +51,14 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
           <h2 className="font-heading text-2xl font-bold text-slate-950">What you can expect</h2>
           <ul className="mt-6 grid gap-5">{service.outcomes.map((outcome) => <li key={outcome} className="flex gap-3 text-sm leading-7 text-slate-600"><Check size={18} className="mt-1 shrink-0 text-primary" /> {outcome}</li>)}</ul>
           <button type="button" onClick={() => setBookingOpen(true)} className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-extrabold text-white">Discuss this service <ArrowRight size={16} /></button>
-          <p className="mt-5 text-xs leading-6 text-slate-500">Need a broader plan? Explore our <Link to="/services/digital-strategy-growth" className="font-bold text-primary">digital strategy and growth service</Link> or review <Link to="/work" className="font-bold text-primary">recent work</Link>.</p>
+          <p className="mt-5 text-xs leading-6 text-slate-500">
+            {service.slug === "digital-strategy-growth" ? (
+              <>Ready to activate the plan? Explore our <Link to="/services/performance-advertising" className="font-bold text-primary">performance marketing service</Link></>
+            ) : (
+              <>Need a broader plan? Explore our <Link to="/services/digital-strategy-growth" className="font-bold text-primary">digital strategy and growth service</Link></>
+            )}{" "}
+            or review <Link to="/work" className="font-bold text-primary">relevant digital marketing work</Link>.
+          </p>
         </aside>
       </section>
       <section className="bg-[#030713] py-16 text-white sm:py-20" aria-labelledby="related-work-heading">
