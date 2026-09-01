@@ -54,7 +54,7 @@ List the work the business actually needs:
 
 Some businesses need one capable coordinator supported by existing designers and sales staff. Others need several creative and technical disciplines. Choosing the model before defining the work can result in either under-resourcing or paying for capabilities that are rarely used.
 
-## In-house, agency and hybrid models at a glance
+## Should you choose an in-house social media team or an agency?
 
 | Area | In-house team | Agency | Hybrid model |
 | --- | --- | --- | --- |

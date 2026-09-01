@@ -34,6 +34,21 @@ A useful SME digital marketing plan connects one business objective with a defin
 
 The framework below does not prescribe a universal budget or channel mix. It helps a Sri Lankan SME make priorities with the information and resources it actually has.
 
+## How should a Sri Lankan SME create a digital marketing plan?
+
+1. Choose one primary business objective.
+2. Define the priority audience and decision journey.
+3. Make the offer and next action clear.
+4. Prepare the website or landing path.
+5. Assign a specific role to social media.
+6. Build content around customer decisions.
+7. Decide whether paid media has a useful role.
+8. Define measures, data limitations and owners.
+9. Test one important assumption at a time.
+10. Review evidence and actions each month.
+
+The following sections explain each step without prescribing a universal platform mix, posting frequency or budget.
+
 ## Step 1: choose one primary business objective
 
 “Grow online” is too broad to guide action. Choose a commercial priority that can be described clearly.

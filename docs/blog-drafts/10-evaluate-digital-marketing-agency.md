@@ -226,7 +226,9 @@ Results depend on factors including:
 
 Ask the provider to identify which factors it controls, influences or relies on the business to supply.
 
-## Questions to ask before appointing an agency
+## What should a business check before hiring a digital marketing agency?
+
+Check whether the agency understands the business problem, can explain its strategy, defines scope and client responsibilities, uses relevant evidence, reports meaningful outcomes, states attribution limits and puts account ownership and handover in writing. Ask every shortlisted agency the same questions so broad claims can be compared with specific commitments.
 
 ### Strategy
 

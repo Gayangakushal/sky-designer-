@@ -195,7 +195,9 @@ Useful evidence can include:
 
 Do not ask an agency to expose another client's confidential data. Instead, look for enough context to understand how the team thinks and measures.
 
-## Questions to ask before choosing an agency
+## How do you choose a Meta Ads agency?
+
+Choose a Meta Ads agency by comparing how each provider understands the business objective, structures campaigns, plans creative tests, measures lead or sales quality, reports decisions and handles account ownership. Use the same questions for every shortlisted agency so fees, evidence and responsibilities can be compared on an equal basis.
 
 Use the same core questions with every shortlisted provider so proposals are easier to compare.
 

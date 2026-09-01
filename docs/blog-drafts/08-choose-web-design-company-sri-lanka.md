@@ -242,7 +242,9 @@ A reliable proposal should explain:
 
 Ask who owns each stage and what the client must provide. Avoid assuming a standard timeline; the schedule must follow the approved scope and dependencies.
 
-## Questions to ask before hiring a web design company
+## How do you choose a web design company?
+
+Choose a web design company by reviewing relevant live work, mobile usability, SEO foundations, CMS access, ownership, hosting, maintenance, security, performance, analytics and support. The provider should also explain its process and exact responsibility for strategy, content, design, development, testing, launch and handover. Compare these areas using the same brief.
 
 ### Strategy and scope
 

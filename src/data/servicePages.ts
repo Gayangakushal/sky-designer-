@@ -9,6 +9,8 @@ const details = {
     definition: "Performance advertising is paid digital media managed against a measurable action such as an enquiry, lead or sale.",
     idealFor: "This service is for businesses that have a clear offer and want structured Meta advertising, creative testing and performance reporting.",
     businessProblem: "It addresses wasted ad spend, unclear campaign structure and inconsistent lead quality by connecting the offer, audience, creative and conversion path.",
+    scopeFactors: "Scope and cost depend on the campaign objective, media plan, number of offers or audiences, creative-production needs, testing plan, measurement setup and reporting responsibilities. Media spend, agency fees and creative-production costs should be shown separately in a proposal.",
+    providerChecklist: ["A strategy tied to a defined business action", "Clear ownership of accounts, data and creative assets", "Reporting that separates media performance from lead or sales quality"],
     outcomes: ["A campaign structure aligned with your objective", "Creative and audience tests based on real performance", "Reporting that explains results and practical next steps"],
     approach: "We begin with your offer, customer journey and conversion target. From there, our team develops the campaign structure, advertising creative and testing plan, then reviews results to improve lead quality and efficiency over time.",
     faqs: [
@@ -24,6 +26,8 @@ const details = {
     definition: "Social media management coordinates content planning, publishing, page activity and reporting as one ongoing brand system.",
     idealFor: "This service is for businesses that need a consistent social presence but do not want content, publishing and community activity managed separately.",
     businessProblem: "It solves inconsistent publishing, fragmented brand messaging and limited visibility into what content is helping the audience engage with the business.",
+    scopeFactors: "Scope and cost depend on the channels covered, content volume and formats, production requirements, publishing and community responsibilities, approval workflow, languages and reporting depth. A proposal should state which responsibilities remain with the client.",
+    providerChecklist: ["A clear division of content, publishing and community responsibilities", "A workable factual-review and approval process", "Reporting linked to the business objective, not posting volume alone"],
     outcomes: ["A practical content calendar built around your audience", "Consistent brand voice and visual direction", "Regular reporting with clear content insights"],
     approach: "We learn how your customers make decisions, define useful content themes and turn them into a manageable publishing plan. Page activity and results are reviewed regularly so the plan can respond to what audiences actually engage with.",
     faqs: [
@@ -39,6 +43,8 @@ const details = {
     definition: "Branding and creative design turns a business position and personality into a consistent visual identity and campaign system.",
     idealFor: "This service is for new or established businesses that need a clearer identity, consistent social creative or a focused campaign direction.",
     businessProblem: "It addresses unclear positioning, inconsistent visuals and campaign creative that does not make the brand distinctive or easy to recognise.",
+    scopeFactors: "Scope and cost depend on whether the project needs a focused logo assignment, a wider identity system, research, applications, guidelines, revision stages and final file preparation. Quotations should define deliverables and usage or ownership terms rather than relying on the word branding alone.",
+    providerChecklist: ["A process that starts with the business and audience", "A precise list of applications, guidelines and final files", "Relevant work with enough context to evaluate the provider's role"],
     outcomes: ["A distinctive visual direction for your business", "Campaign and social creative with a consistent identity", "Practical visual guidance your team can continue to use"],
     approach: "We translate your positioning and personality into a focused creative system. Depending on the brief, that can include identity development, campaign concepts, social media assets and guidelines for consistent day-to-day use.",
     faqs: [
@@ -54,6 +60,8 @@ const details = {
     definition: "Video and content production covers the planning, creation and editing of visual assets for digital campaigns and social channels.",
     idealFor: "This service is for brands that need platform-ready video, commercial visuals, motion graphics or reusable campaign content.",
     businessProblem: "It solves the gap between having a message and having enough well-planned, platform-ready visual content to communicate it consistently.",
+    scopeFactors: "Scope and cost depend on the concept, script, preparation, filming requirements, crew, equipment, locations, talent, editing, motion graphics, licensing and number of final formats. Production, third-party and recurring distribution costs should be identified separately where they apply.",
+    providerChecklist: ["A brief that connects the asset to an audience and channel", "A defined production, revision and approval process", "Clarity on deliverables, formats, licensing and third-party costs"],
     outcomes: ["Content concepts designed for the intended platform", "A coordinated production and editing workflow", "Reusable assets for campaigns and organic social media"],
     approach: "Our team develops the concept and production plan before moving into capture, editing and delivery. We consider aspect ratios, pacing, captions and variations early so the finished content is ready for real digital use.",
     faqs: [
@@ -69,6 +77,8 @@ const details = {
     definition: "Website design and development combines content structure, interface design and responsive implementation into one public digital experience.",
     idealFor: "This service is for businesses that need a professional new website, a clearer customer journey or a responsive platform prepared for search visibility and enquiries.",
     businessProblem: "It addresses slow, unclear or outdated websites that make it difficult for visitors to understand the offer, trust the business or take the next step.",
+    scopeFactors: "Scope and cost depend on the site type, content structure, custom design, content-management needs, ecommerce or other integrations, content work, testing and post-launch support. Domain, hosting, maintenance and other recurring or third-party costs should be separated from the initial design and development scope.",
+    providerChecklist: ["Relevant websites reviewed on mobile as well as desktop", "Written ownership, access, hosting and maintenance responsibilities", "A process covering content, usability, search foundations, performance and launch"],
     outcomes: ["A responsive experience for mobile and desktop visitors", "Clear page structure and conversion paths", "SEO-ready technical and content foundations"],
     approach: "We map the content and user journey, establish the interface direction, then build and test the responsive experience. The final site is prepared for deployment with practical attention to accessibility, performance and maintainability.",
     faqs: [
@@ -84,6 +94,8 @@ const details = {
     definition: "Digital strategy connects business objectives with practical priorities across content, advertising, websites and customer journeys.",
     idealFor: "This service is for businesses that need to decide what to prioritise, understand gaps in their current activity or coordinate several digital channels.",
     businessProblem: "It addresses disconnected marketing activity, unclear priorities and channel decisions that are not tied closely enough to customer journeys or business goals.",
+    scopeFactors: "Scope and cost depend on the number of channels and customer journeys reviewed, the quality of available data, stakeholder involvement, research needs, measurement design and the depth of the roadmap or implementation support. The engagement should distinguish strategy work from later media, production and technology costs.",
+    providerChecklist: ["A diagnosis based on business objectives and available evidence", "Priorities with clear channel roles, owners and measures", "Explicit assumptions, limitations and responsibilities for implementation"],
     outcomes: ["A clear view of current gaps and opportunities", "Priorities based on business goals and available resources", "A practical roadmap across content, advertising and web"],
     approach: "We review the current digital presence, customer journey and available performance evidence. The resulting plan defines priorities, channel roles and realistic next actions that your team can execute and measure.",
     faqs: [

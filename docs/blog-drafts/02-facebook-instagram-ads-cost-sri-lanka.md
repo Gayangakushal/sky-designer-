@@ -34,7 +34,9 @@ There is no single price for Facebook or Instagram advertising in Sri Lanka. The
 
 This guide does not provide an invented price range or promise a standard cost per lead. Instead, it explains how to read a proposal, decide what must be funded and compare quotations on the same basis.
 
-## The short answer: separate media spend from service fees
+## What affects Facebook and Instagram advertising cost in Sri Lanka?
+
+Facebook and Instagram advertising cost depends on the objective, audience, competition, campaign period, creative requirements, testing plan, conversion path and measurement setup. The total should separate media or platform spend from the agency or management fee, creative production and any approved third-party or conversion-path costs. Compare quotations using the same scope and period, not one headline total.
 
 The most important budgeting step is to stop treating every advertising-related cost as “ad spend.”
 

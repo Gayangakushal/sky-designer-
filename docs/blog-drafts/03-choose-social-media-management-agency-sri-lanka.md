@@ -206,7 +206,9 @@ Look for questions such as:
 
 If a proposal is built entirely around post quantity before these questions are discussed, the content may be difficult to connect to business priorities.
 
-## Questions to ask a social media management agency
+## How do you choose a social media management agency?
+
+Choose a social media management agency by comparing its strategy, content-planning process, creative scope, publishing and community responsibilities, approval workflow, reporting, ownership and paid-media boundaries. A useful proposal should explain both what the agency will manage and what information, approvals or customer follow-up the business must provide.
 
 Use a consistent list when comparing providers.
 

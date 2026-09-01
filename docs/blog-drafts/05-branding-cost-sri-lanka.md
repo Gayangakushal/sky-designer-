@@ -34,6 +34,10 @@ There is no single branding price that applies to every Sri Lankan business. Cos
 
 This guide explains the factors behind a branding quotation without inventing price ranges or assuming that every business needs a complete rebrand.
 
+## What affects branding cost in Sri Lanka?
+
+Branding cost depends on the problem being solved, research and discovery, creative direction, identity elements, required applications, guideline depth, feedback stages, revisions and final deliverables. A logo-only assignment and a complete identity system therefore should not be compared as the same project. Review the defined scope, ownership and handover files before comparing quotation totals.
+
 ## First decide whether you need a logo or a brand identity
 
 A logo is one identifying element. A brand identity is a broader visual and verbal system that helps a business communicate consistently across relevant customer touchpoints.

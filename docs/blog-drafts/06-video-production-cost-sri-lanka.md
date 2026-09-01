@@ -34,6 +34,10 @@ There is no universal video production price in Sri Lanka. A quote changes accor
 
 The most reliable way to budget is to define what the video must achieve, where it will be used and exactly what must be delivered.
 
+## What affects video production cost in Sri Lanka?
+
+Video production cost depends on pre-production, concept and scripting, filming time, crew, equipment, locations, talent, editing, sound, motion graphics, licensing, revisions and final deliverables. A repeatable social content session and a campaign or brand production require different resources. Compare quotations using the same production conditions, usage requirements and delivery list rather than video duration alone.
+
 ## Begin with the purpose of the video
 
 Production choices should follow the business objective. Before discussing cameras or filming days, define:

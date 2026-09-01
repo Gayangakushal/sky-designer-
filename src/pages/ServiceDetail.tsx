@@ -44,6 +44,16 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
           <p className="mt-5 text-base leading-8 text-slate-600">{service.idealFor}</p>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">The business problem it addresses</h2>
           <p className="mt-5 text-base leading-8 text-slate-600">{service.businessProblem}</p>
+          <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">What affects the scope and cost?</h2>
+          <p className="mt-5 text-base leading-8 text-slate-600">{service.scopeFactors}</p>
+          <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">What should you evaluate before choosing a provider?</h2>
+          <ul className="mt-6 grid gap-4">
+            {service.providerChecklist.map((item) => (
+              <li key={item} className="flex items-start gap-3 rounded-xl border border-slate-200 p-4 text-sm font-semibold leading-6 text-slate-800">
+                <Check size={17} className="mt-1 shrink-0 text-primary" /> {item}
+              </li>
+            ))}
+          </ul>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">How Sky Designers provides the service</h2>
           <p className="mt-5 text-base leading-8 text-slate-600">{service.approach}</p>
           <h2 className="mt-12 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">What the service covers</h2>

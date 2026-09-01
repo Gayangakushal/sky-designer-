@@ -34,6 +34,10 @@ There is no single business website price in Sri Lanka. Cost changes according t
 
 To budget responsibly, define what the website must help users do, what the business must manage after launch and which costs are initial versus ongoing.
 
+## What affects website development cost in Sri Lanka?
+
+Website development cost depends on the site type, page and content structure, custom design, CMS, ecommerce features, integrations, responsive behaviour, testing, SEO requirements and support. Separate the initial design and development scope from content work, domain and hosting, third-party services, maintenance and other recurring costs before comparing quotations or deciding which proposal offers better value.
+
 ## Start with the business job of the website
 
 A website is not only a collection of pages. It should help a defined audience understand the offer, trust the business and complete a useful next action.
