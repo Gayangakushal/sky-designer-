@@ -40,17 +40,16 @@ export const company = {
   slogan: "Design Excellence Marketing Brilliance",
   phoneDisplay: "+94 77 950 7298",
   phone: "+94779507298",
-  email: "Info@skyDesigners.lk",
+  email: "info@skydesigners.lk",
   whatsapp: "https://wa.me/94779507298",
   registration: "WP/GAM/WT/2024/00244",
   location: "Sri Lanka",
   facebook: "https://web.facebook.com/profile.php?id=100089002696067",
   instagram: "https://www.instagram.com/js_sky_designers/",
   linkedin: "https://lk.linkedin.com/company/sky-designers",
-  threads:
-    "https://www.threads.com/@js_sky_designers?xmt=AQG08qf4Pz6BzskfgCvBjwAlt5lzOQUseE8WOWhIO99nN1E",
+  threads: "https://www.threads.com/@js_sky_designers",
   tiktok: "https://www.tiktok.com/@sky_designers",
-  youtube: "https://youtube.com/@skydesigners?si=vvigzHI3WzfNyxUo",
+  youtube: "https://youtube.com/@skydesigners",
 };
 
 export const services = [

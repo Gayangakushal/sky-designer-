@@ -96,6 +96,44 @@ const About = () => {
           </div>
         </section>
 
+        <section className="site-container py-16 sm:py-20" aria-labelledby="selected-evidence-heading">
+          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-primary">Selected project evidence</p>
+          <h2 id="selected-evidence-heading" className="mt-3 font-heading text-3xl font-extrabold tracking-[-0.04em] text-slate-950">
+            Documented website projects
+          </h2>
+          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
+            These published project records identify the client, website scope, services, and
+            delivered features. They do not claim unreported traffic, conversion, or revenue
+            outcomes.
+          </p>
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
+            <article className="rounded-[20px] border border-slate-200 bg-slate-50 p-6">
+              <h3 className="font-heading text-xl font-bold text-slate-950">
+                Lulu Bridal Studio &amp; Academy website
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                A responsive website project covering bridal services, academy information,
+                collections, appointments, FAQs, and business contact information.
+              </p>
+              <Link to="/work/lulu-bridal-studio-academy-website" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                Review documented project scope <ArrowRight size={15} />
+              </Link>
+            </article>
+            <article className="rounded-[20px] border border-slate-200 bg-slate-50 p-6">
+              <h3 className="font-heading text-xl font-bold text-slate-950">
+                Lustre &amp; Legacy ecommerce website
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                A responsive ecommerce project covering gemstone collections, certification
+                information, consultation, shipping, FAQs, and enquiry features.
+              </p>
+              <Link to="/work/lustre-legacy-luxury-gemstone-e-commerce-website" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                Review documented project scope <ArrowRight size={15} />
+              </Link>
+            </article>
+          </div>
+        </section>
+
         <section className="site-container py-16 sm:py-20" aria-labelledby="leadership-heading">
           <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
             <article>

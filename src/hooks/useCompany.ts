@@ -15,7 +15,7 @@ export function useCompany() {
     phone: contact["phone"] || fallbackCompany.phone,
     email: contact["email"] || fallbackCompany.email,
     whatsapp: contact["whatsapp"] || fallbackCompany.whatsapp,
-    address: contact["address"] || "Ministry Of Defence Rd, Battaramulla 10120",
+    address: contact["address"] || fallbackCompany.location,
     registration: contact["registration"] || fallbackCompany.registration,
     facebook: social["facebook"] || fallbackCompany.facebook,
     instagram: social["instagram"] || fallbackCompany.instagram,

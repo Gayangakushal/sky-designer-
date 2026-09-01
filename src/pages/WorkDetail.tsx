@@ -13,6 +13,10 @@ import MotionReveal from "@/components/MotionReveal";
 import { MOTION } from "@/lib/motion";
 import { relatedServicePagesForWork, servicePageForLabel } from "@/lib/service-links";
 import VideoPlayer from "@/components/work/VideoPlayer";
+import {
+  genericWorkEvidenceSummary,
+  getWorkEvidenceProfile,
+} from "@/data/workEvidence";
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
@@ -74,6 +78,7 @@ const WorkDetail = () => {
 
   const extraVideos = (post?.media ?? []).filter((m) => m.media_type === "video");
   const relatedServices = post ? relatedServicePagesForWork(post) : [];
+  const evidenceProfile = post ? getWorkEvidenceProfile(post.slug) : undefined;
 
   return (
     <div className="min-h-screen bg-[#030713]">
@@ -118,18 +123,89 @@ const WorkDetail = () => {
                 )}
               </motion.header>
 
+              <section
+                className="mt-8 max-w-4xl rounded-[20px] border border-blue-300/20 bg-blue-400/10 p-6"
+                aria-labelledby="evidence-summary-heading"
+              >
+                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-300">
+                  Evidence summary
+                </p>
+                <h2 id="evidence-summary-heading" className="sr-only">
+                  Citation-ready project summary
+                </h2>
+                <p className="mt-3 text-base leading-8 text-slate-200">
+                  {evidenceProfile?.citationSummary || genericWorkEvidenceSummary(post)}
+                </p>
+              </section>
+
               <div className="mt-10 grid gap-10 lg:grid-cols-12">
                 <div className="lg:col-span-8">
                   <ImageReveal className="rounded-[24px]" delay={0.08}>
                     <PostMedia post={post} onOpenGallery={setLightbox} />
                   </ImageReveal>
 
+                  {evidenceProfile && (
+                    <section className="mt-10" aria-labelledby="project-scope-heading">
+                      <h2 id="project-scope-heading" className="font-heading text-2xl font-bold">
+                        Project scope
+                      </h2>
+                      <p className="mt-4 text-base leading-8 text-slate-300">
+                        {evidenceProfile.projectScope}
+                      </p>
+
+                      <h2 className="mt-10 font-heading text-2xl font-bold">
+                        Creative and technical direction
+                      </h2>
+                      <p className="mt-4 text-base leading-8 text-slate-300">
+                        {evidenceProfile.direction}
+                      </p>
+
+                      <h2 className="mt-10 font-heading text-2xl font-bold">
+                        What Sky Designers delivered
+                      </h2>
+                      <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {evidenceProfile.deliverables.map((deliverable) => (
+                          <li
+                            key={deliverable}
+                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm leading-6 text-slate-200"
+                          >
+                            {deliverable}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <h2 className="mt-10 font-heading text-2xl font-bold">
+                        Evidence and measurement context
+                      </h2>
+                      <p className="mt-4 text-base leading-8 text-slate-300">
+                        {evidenceProfile.measurementContext}
+                      </p>
+                    </section>
+                  )}
+
                   {post.content && (
-                    <div className="mt-8 space-y-4 text-base leading-8 text-slate-300">
-                      {post.content.split(/\n{2,}/).map((paragraph, index) => (
-                        <p key={index}>{paragraph}</p>
-                      ))}
-                    </div>
+                    <section className="mt-10" aria-labelledby="published-description-heading">
+                      <h2 id="published-description-heading" className="font-heading text-2xl font-bold">
+                        Published project description
+                      </h2>
+                      <div className="mt-4 space-y-4 text-base leading-8 text-slate-300">
+                        {post.content.split(/\n{2,}/).map((paragraph, index) => (
+                          <p key={index}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {!evidenceProfile && (
+                    <section className="mt-10 rounded-[20px] border border-white/10 bg-white/5 p-6">
+                      <h2 className="font-heading text-xl font-bold">Evidence available</h2>
+                      <p className="mt-3 text-sm leading-7 text-slate-300">
+                        This portfolio record contains the published creative format, category,
+                        description, and media available above. It does not currently document a
+                        verified objective, delivery scope, campaign period, attribution source,
+                        or performance outcome, so no Results section is shown.
+                      </p>
+                    </section>
                   )}
 
                   {gallery.length > 1 && (
@@ -179,12 +255,14 @@ const WorkDetail = () => {
                   <div className="rounded-[24px] border border-white/10 bg-white/5 p-6">
                     <h2 className="font-heading text-lg font-bold">Details</h2>
                     <dl className="mt-4 space-y-4 text-sm">
-                      {post.client_name && (
+                      {(post.client_name || evidenceProfile?.clientOrBrand) && (
                         <div>
                           <dt className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
                             Client
                           </dt>
-                          <dd className="mt-1 text-slate-200">{post.client_name}</dd>
+                          <dd className="mt-1 text-slate-200">
+                            {post.client_name || evidenceProfile?.clientOrBrand}
+                          </dd>
                         </div>
                       )}
                       {post.category && (

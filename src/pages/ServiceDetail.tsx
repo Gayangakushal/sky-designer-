@@ -8,6 +8,7 @@ import type { ServicePageData } from "@/data/servicePages";
 import { usePublishedPosts } from "@/hooks/useContent";
 import { relatedServicePagesForWork } from "@/lib/service-links";
 import WorkCard from "@/components/work/WorkCard";
+import { workEvidencePriority } from "@/data/workEvidence";
 
 const ServiceDetail = ({ service }: { service: ServicePageData }) => {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -19,6 +20,7 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
         .filter((project) =>
           relatedServicePagesForWork(project).some((related) => related.slug === service.slug),
         )
+        .sort((a, b) => workEvidencePriority(b) - workEvidencePriority(a))
         .slice(0, 3),
     [service.slug, work],
   );
@@ -79,6 +81,11 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
                 Browse the complete portfolio for published Sky Designers projects. A project appears here only when its stored category, service labels, or visible topic match this service.
               </p>
             )}
+            <p className="mt-6 max-w-3xl text-xs leading-6 text-slate-400">
+              Published work demonstrates documented scope or creative output. Unless a project
+              explicitly includes measurement context, it should not be read as proof of reach,
+              leads, sales, revenue, or typical results for this service.
+            </p>
           </div>
         </section>
       <section className="site-container py-16 sm:py-20" aria-labelledby="service-faq-heading">

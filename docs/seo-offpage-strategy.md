@@ -122,7 +122,7 @@ Use a single approved entity record before claiming or creating profiles.
 | Business name | `Sky Designers` |
 | Website | `https://skydesigners.lk` — prefer this HTTPS root without tracking parameters |
 | Telephone | Display: `+94 77 950 7298`; machine/link form: `+94779507298` |
-| Official email | Current local source: `Info@skyDesigners.lk`; management should approve one exact display casing and use it consistently |
+| Official email | `info@skydesigners.lk` |
 | Country/service market | `Sri Lanka` |
 | Physical address | Not verified for this strategy; leave blank rather than inventing one |
 | Registration | Use only where required and after confirming the current official value and disclosure approval |
@@ -151,9 +151,9 @@ The codebase currently identifies these official profiles:
 - Facebook: `https://web.facebook.com/profile.php?id=100089002696067`
 - Instagram: `https://www.instagram.com/js_sky_designers/`
 - LinkedIn: `https://lk.linkedin.com/company/sky-designers`
-- YouTube: `https://youtube.com/@skydesigners?si=vvigzHI3WzfNyxUo`
+- YouTube: `https://youtube.com/@skydesigners`
 - TikTok: `https://www.tiktok.com/@sky_designers`
-- Threads: `https://www.threads.com/@js_sky_designers?xmt=AQG08qf4Pz6BzskfgCvBjwAlt5lzOQUseE8WOWhIO99nN1E`
+- Threads: `https://www.threads.com/@js_sky_designers`
 
 Where a platform provides a dedicated website/company field, use the canonical homepage as the primary entity link. Deep links should be used in individual posts, video descriptions, featured sections or campaigns where they match the content.
 
