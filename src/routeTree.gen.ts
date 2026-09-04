@@ -17,6 +17,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ApiMetaCapiRouteImport } from './routes/api.meta-capi'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as CareersIndexRouteImport } from './routes/careers.index'
@@ -69,6 +70,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMetaCapiRoute = ApiMetaCapiRouteImport.update({
+  id: '/api/meta-capi',
+  path: '/api/meta-capi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/api/meta-capi': typeof ApiMetaCapiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/api/meta-capi': typeof ApiMetaCapiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/login': typeof AdminLoginRoute
+  '/api/meta-capi': typeof ApiMetaCapiRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/careers/$jobSlug': typeof CareersJobSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/api/meta-capi'
     | '/blog/$slug'
     | '/careers/$jobSlug'
     | '/services/$slug'
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/api/meta-capi'
     | '/blog/$slug'
     | '/careers/$jobSlug'
     | '/services/$slug'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/sitemap.xml'
     | '/admin/login'
+    | '/api/meta-capi'
     | '/blog/$slug'
     | '/careers/$jobSlug'
     | '/services/$slug'
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  ApiMetaCapiRoute: typeof ApiMetaCapiRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CareersJobSlugRoute: typeof CareersJobSlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/meta-capi': {
+      id: '/api/meta-capi'
+      path: '/api/meta-capi'
+      fullPath: '/api/meta-capi'
+      preLoaderRoute: typeof ApiMetaCapiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminLoginRoute: AdminLoginRoute,
+  ApiMetaCapiRoute: ApiMetaCapiRoute,
   BlogSlugRoute: BlogSlugRoute,
   CareersJobSlugRoute: CareersJobSlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,

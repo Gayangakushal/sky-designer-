@@ -5,4 +5,5 @@ return [
     'supabase_url' => 'https://YOUR_PROJECT.supabase.co',
     'supabase_anon_key' => 'CHANGE_ME',
     'allowed_origins' => ['https://skydesigners.lk', 'https://www.skydesigners.lk'],
+    'public_base_url' => 'https://api.skydesigners.lk/billing',
 ];

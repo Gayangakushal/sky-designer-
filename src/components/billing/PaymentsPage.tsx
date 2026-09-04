@@ -4,12 +4,230 @@ import { Plus, RotateCcw, Search, X } from "lucide-react";
 import { billingApi } from "@/lib/billing-api";
 import { ApiError, Empty, Money, PageHeader } from "./BillingCommon";
 
-export default function PaymentsPage(){
-  const [search,setSearch]=useState("");const [adding,setAdding]=useState(false);const qc=useQueryClient();
-  const query=useQuery({queryKey:["billing","payments",search],queryFn:()=>billingApi.payments(new URLSearchParams({search}).toString())});
-  const reverse=useMutation({mutationFn:({id,reason}:{id:number;reason:string})=>billingApi.reversePayment(id,reason),onSuccess:()=>void qc.invalidateQueries({queryKey:["billing"]})});
-  return <div><PageHeader title="Payments" description="Actual income received against invoices, with safe reversal history." action={<button className="billing-primary" onClick={()=>setAdding(true)}><Plus size={16}/> Add Payment</button>}/><div className="billing-toolbar"><label className="billing-search"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Invoice, client or reference" aria-label="Search payments"/></label></div>{query.error?<ApiError error={query.error}/>:<section className="admin-data-card">{query.data?.payments.length?<div className="admin-table-scroll"><table className="admin-table"><thead><tr><th>Date</th><th>Invoice</th><th>Client</th><th>Method</th><th>Reference</th><th>Amount</th><th>State</th><th>Action</th></tr></thead><tbody>{query.data.payments.map(p=><tr key={p.id}><td>{p.payment_date}</td><td className="admin-table-primary">{p.invoice_number}</td><td>{p.client_name}</td><td>{p.payment_method}</td><td>{p.reference_number||"—"}</td><td><Money value={p.amount}/></td><td>{p.reversed_at?"Reversed":"Recorded"}</td><td>{!p.reversed_at&&<button className="billing-icon-danger" onClick={()=>{const reason=prompt("Reason for reversing this payment (required):");if(reason?.trim()&&confirm("Reverse this payment? This action remains in the audit history."))reverse.mutate({id:p.id,reason});}}><RotateCcw size={15}/> Reverse</button>}</td></tr>)}</tbody></table></div>:<Empty label="No payments found"/>}</section>}{adding&&<PaymentDialog onClose={()=>setAdding(false)} onSaved={()=>{setAdding(false);void qc.invalidateQueries({queryKey:["billing"]});}}/>}</div>;
+export default function PaymentsPage() {
+  const [search, setSearch] = useState("");
+  const [adding, setAdding] = useState(false);
+  const qc = useQueryClient();
+  const query = useQuery({
+    queryKey: ["billing", "payments", search],
+    queryFn: () => billingApi.payments(new URLSearchParams({ search }).toString()),
+  });
+  const reverse = useMutation({
+    mutationFn: ({ id, reason }: { id: number; reason: string }) =>
+      billingApi.reversePayment(id, reason),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["billing"] }),
+  });
+  return (
+    <div>
+      <PageHeader
+        title="Payments"
+        description="Actual income received against invoices, with safe reversal history."
+        action={
+          <button className="billing-primary" onClick={() => setAdding(true)}>
+            <Plus size={16} /> Add Payment
+          </button>
+        }
+      />
+      <div className="billing-toolbar">
+        <label className="billing-search">
+          <Search size={16} />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Invoice, client or reference"
+            aria-label="Search payments"
+          />
+        </label>
+      </div>
+      {query.error ? (
+        <ApiError error={query.error} />
+      ) : (
+        <section className="admin-data-card">
+          {query.data?.payments.length ? (
+            <div className="admin-table-scroll">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Invoice</th>
+                    <th>Client</th>
+                    <th>Method</th>
+                    <th>Reference</th>
+                    <th>Amount</th>
+                    <th>State</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {query.data.payments.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.payment_date}</td>
+                      <td className="admin-table-primary">{p.invoice_number}</td>
+                      <td>{p.client_name}</td>
+                      <td>{p.payment_method}</td>
+                      <td>{p.reference_number || "—"}</td>
+                      <td>
+                        <Money value={p.amount} />
+                      </td>
+                      <td>{p.reversed_at ? "Reversed" : "Recorded"}</td>
+                      <td>
+                        {!p.reversed_at && (
+                          <button
+                            className="billing-icon-danger"
+                            onClick={() => {
+                              const reason = prompt(
+                                "Reason for reversing this payment (required):",
+                              );
+                              if (
+                                reason?.trim() &&
+                                confirm(
+                                  "Reverse this payment? This action remains in the audit history.",
+                                )
+                              )
+                                reverse.mutate({ id: p.id, reason });
+                            }}
+                          >
+                            <RotateCcw size={15} /> Reverse
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <Empty label="No payments found" />
+          )}
+        </section>
+      )}
+      {adding && (
+        <PaymentDialog
+          onClose={() => setAdding(false)}
+          onSaved={() => {
+            setAdding(false);
+            void qc.invalidateQueries({ queryKey: ["billing"] });
+          }}
+        />
+      )}
+    </div>
+  );
 }
-function PaymentDialog({onClose,onSaved}:{onClose:()=>void;onSaved:()=>void}){const params=new URLSearchParams(typeof window!=="undefined"?window.location.search:"");const [form,setForm]=useState({invoice_id:Number(params.get("invoice"))||0,payment_date:new Date().toISOString().slice(0,10),amount:0,payment_method:"Bank Transfer",reference_number:"",notes:""});const invoices=useQuery({queryKey:["billing","invoices","payment-picker"],queryFn:()=>billingApi.invoices("outstanding=1")});const save=useMutation({mutationFn:billingApi.addPayment,onSuccess:onSaved});const submit=(e:FormEvent)=>{e.preventDefault();save.mutate(form)};return <div className="billing-modal-backdrop"><div className="billing-modal" role="dialog" aria-modal="true"><div className="billing-modal-head"><h2>Add Payment</h2><button onClick={onClose}><X/></button></div><form onSubmit={submit} className="billing-form-grid"><label className="billing-field billing-wide"><span>Invoice *</span><select required value={form.invoice_id||""} onChange={e=>setForm({...form,invoice_id:Number(e.target.value)})}><option value="">Select outstanding invoice</option>{invoices.data?.invoices.map(i=><option value={i.id} key={i.id}>{i.invoice_number} — {i.client_name} — balance {i.balance_due}</option>)}</select></label><Field label="Payment date" type="date" value={form.payment_date} set={v=>setForm({...form,payment_date:v})}/><Field label="Amount" type="number" value={String(form.amount)} set={v=>setForm({...form,amount:Number(v)})}/><label className="billing-field"><span>Method</span><select value={form.payment_method} onChange={e=>setForm({...form,payment_method:e.target.value})}>{["Bank Transfer","Cash","Card","Other"].map(v=><option key={v}>{v}</option>)}</select></label><Field label="Transaction / reference" value={form.reference_number} set={v=>setForm({...form,reference_number:v})}/><label className="billing-field billing-wide"><span>Notes</span><textarea value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})}/></label>{save.error&&<p className="billing-form-error billing-wide">{save.error.message}</p>}<div className="billing-modal-actions billing-wide"><button type="button" className="billing-secondary" onClick={onClose}>Cancel</button><button className="billing-primary" disabled={save.isPending||form.amount<=0}>{save.isPending?"Recording…":"Record Payment"}</button></div></form></div></div>}
-function Field({label,value,set,type="text"}:{label:string;value:string;set:(v:string)=>void;type?:string}){return <label className="billing-field"><span>{label}</span><input required={type!=="text"} type={type} value={value} onChange={e=>set(e.target.value)} min={type==="number"?"0.01":undefined} step={type==="number"?"0.01":undefined}/></label>}
-
+function PaymentDialog({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+  const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const [form, setForm] = useState({
+    invoice_id: Number(params.get("invoice")) || 0,
+    payment_date: new Date().toISOString().slice(0, 10),
+    amount: 0,
+    payment_method: "Bank Transfer",
+    reference_number: "",
+    notes: "",
+  });
+  const invoices = useQuery({
+    queryKey: ["billing", "invoices", "payment-picker"],
+    queryFn: () => billingApi.invoices("outstanding=1"),
+  });
+  const save = useMutation({ mutationFn: billingApi.addPayment, onSuccess: onSaved });
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    save.mutate(form);
+  };
+  return (
+    <div className="billing-modal-backdrop">
+      <div className="billing-modal" role="dialog" aria-modal="true">
+        <div className="billing-modal-head">
+          <h2>Add Payment</h2>
+          <button onClick={onClose}>
+            <X />
+          </button>
+        </div>
+        <form onSubmit={submit} className="billing-form-grid">
+          <label className="billing-field billing-wide">
+            <span>Invoice *</span>
+            <select
+              required
+              value={form.invoice_id || ""}
+              onChange={(e) => setForm({ ...form, invoice_id: Number(e.target.value) })}
+            >
+              <option value="">Select outstanding invoice</option>
+              {invoices.data?.invoices.map((i) => (
+                <option value={i.id} key={i.id}>
+                  {i.invoice_number} — {i.client_name} — balance {i.balance_due}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Field
+            label="Payment date"
+            type="date"
+            value={form.payment_date}
+            set={(v) => setForm({ ...form, payment_date: v })}
+          />
+          <Field
+            label="Amount"
+            type="number"
+            value={String(form.amount)}
+            set={(v) => setForm({ ...form, amount: Number(v) })}
+          />
+          <label className="billing-field">
+            <span>Method</span>
+            <select
+              value={form.payment_method}
+              onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
+            >
+              {["Bank Transfer", "Cash", "Card", "Other"].map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <Field
+            label="Transaction / reference"
+            value={form.reference_number}
+            set={(v) => setForm({ ...form, reference_number: v })}
+          />
+          <label className="billing-field billing-wide">
+            <span>Notes</span>
+            <textarea
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
+          </label>
+          {save.error && <p className="billing-form-error billing-wide">{save.error.message}</p>}
+          <div className="billing-modal-actions billing-wide">
+            <button type="button" className="billing-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="billing-primary" disabled={save.isPending || form.amount <= 0}>
+              {save.isPending ? "Recording…" : "Record Payment"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+function Field({
+  label,
+  value,
+  set,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  set: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <label className="billing-field">
+      <span>{label}</span>
+      <input
+        required={type !== "text"}
+        type={type}
+        value={value}
+        onChange={(e) => set(e.target.value)}
+        min={type === "number" ? "0.01" : undefined}
+        step={type === "number" ? "0.01" : undefined}
+      />
+    </label>
+  );
+}
