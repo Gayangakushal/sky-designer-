@@ -1,16 +1,18 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, Clock3, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import SectionHeading from "@/components/common/SectionHeading";
-import { company } from "@/data/siteData";
+import { useCompany } from "@/hooks/useCompany";
 
-const contacts = [
-  { icon: Phone, label: "Call us", value: company.phoneDisplay, href: `tel:${company.phone}` },
-  { icon: Mail, label: "Email us", value: company.email, href: `mailto:${company.email}` },
-  { icon: MessageCircle, label: "WhatsApp", value: "Start a conversation", href: company.whatsapp },
-  { icon: MapPin, label: "Based in", value: company.location, href: undefined },
-];
+const LocationSection = () => {
+  const company = useCompany();
+  const contacts = [
+    { icon: Phone, label: "Call us", value: company.phoneDisplay, href: `tel:${company.phone}` },
+    { icon: Mail, label: "Email us", value: company.email, href: `mailto:${company.email}` },
+    { icon: MessageCircle, label: "WhatsApp", value: "Start a conversation", href: company.whatsapp },
+    { icon: MapPin, label: "Based in", value: company.location, href: undefined },
+  ];
 
-const LocationSection = () => (
+  return (
   <section id="contact" className="section-space bg-white">
     <div className="site-container">
       <div className="overflow-hidden rounded-[30px] bg-[#030713] text-white shadow-[0_35px_100px_rgba(15,23,42,.2)]">
@@ -24,7 +26,6 @@ const LocationSection = () => (
                 <a href={company.whatsapp} target="_blank" rel="noreferrer" className="button-shine inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-extrabold text-white transition hover:-translate-y-0.5">Message on WhatsApp <ArrowUpRight size={17} /></a>
                 <a href={`mailto:${company.email}`} className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-white/10">Send an email <Mail size={17} /></a>
               </div>
-              <div className="mt-9 flex items-center gap-3 text-sm text-slate-400"><Clock3 size={17} className="text-blue-300" />Bookings are available before 5:00 PM.</div>
             </div>
           </div>
 
@@ -43,6 +44,7 @@ const LocationSection = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default LocationSection;

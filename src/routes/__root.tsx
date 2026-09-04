@@ -21,6 +21,7 @@ import PageTransition from "@/components/common/PageTransition";
 import PublicMotionLayer from "@/components/common/PublicMotionLayer";
 import FloatingContactActions from "@/components/common/FloatingContactActions";
 import AnalyticsRouteTracker from "@/components/common/AnalyticsRouteTracker";
+import ConversionEventTracker from "@/components/common/ConversionEventTracker";
 import { MOTION } from "@/lib/motion";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
@@ -190,6 +191,7 @@ function RootComponent() {
       >
         <TooltipProvider>
           <AnalyticsRouteTracker />
+          {!isAdmin && <ConversionEventTracker />}
           <ScrollToTop />
           <PublicMotionLayer disabled={isAdmin} />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

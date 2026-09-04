@@ -27,12 +27,6 @@ const TikTokIcon = ({ size = 17, ...props }: LucideProps) => (
   </svg>
 );
 
-const footerContacts = [
-  { name: "Gimhani", display: "075 225 7239", href: "tel:+94752257239" },
-  { name: "Dilshan", display: "070 750 7298", href: "tel:+94707507298" },
-  { name: "Yasara", display: "070 750 7296", href: "tel:+94707507296" },
-];
-
 const Footer = () => {
   const company = useCompany();
   const year = new Date().getFullYear();
@@ -92,9 +86,9 @@ const Footer = () => {
                 <Link to="/about" className="transition hover:text-white">
                   About
                 </Link>
-                <a href="/#portfolio" className="transition hover:text-white">
+                <Link to="/work" className="transition hover:text-white">
                   Our Work
-                </a>
+                </Link>
                 <a href="/#team" className="transition hover:text-white">
                   Team
                 </a>
@@ -143,22 +137,6 @@ const Footer = () => {
                   <Mail size={16} className="mt-0.5 shrink-0 text-blue-300" />
                   {company.email}
                 </a>
-                <div className="grid gap-2 border-t border-white/10 pt-4">
-                  {footerContacts.map((contact) => (
-                    <a
-                      key={contact.name}
-                      href={contact.href}
-                      className="flex min-w-0 items-center gap-3 text-sm text-slate-300 transition hover:text-white"
-                    >
-                      <Phone size={15} className="shrink-0 text-blue-300" />
-                      <span className="min-w-0">
-                        <span className="font-semibold text-slate-200">{contact.name}</span>
-                        <span aria-hidden="true"> — </span>
-                        <span className="whitespace-nowrap">{contact.display}</span>
-                      </span>
-                    </a>
-                  ))}
-                </div>
                 <a
                   href={company.whatsapp}
                   target="_blank"

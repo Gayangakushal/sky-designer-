@@ -36,9 +36,9 @@ const Index = () => {
         <AboutSection />
         <WhoWeAreSection />
         <ServicesSection onBookCall={() => openBooking()} />
+        <LatestWorkSection />
         <StatsSection />
         <ProcessSection />
-        <LatestWorkSection />
         <LatestInsightsSection />
         <PricingSection onSelectPackage={openBooking} />
         <TeamSection />

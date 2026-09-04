@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { BookOpen, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, Menu, ReceiptText, X } from "lucide-react";
 import { Link, useLocation } from "@/lib/router-compat";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 
@@ -18,6 +18,7 @@ const BlogAdminShell = ({ children }: { children: ReactNode }) => {
       <nav className="admin-nav">
         <Link to="/admin" className="admin-nav-item"><span className="admin-nav-icon"><LayoutDashboard size={18} /></span><span>Dashboard</span></Link>
         <Link to="/admin/blog" className={`admin-nav-item ${pathname.startsWith("/admin/blog") ? "is-active" : ""}`}><span className="admin-nav-icon"><BookOpen size={18} /></span><span>Blog</span></Link>
+        <Link to="/admin/billing" className="admin-nav-item"><span className="admin-nav-icon"><ReceiptText size={18} /></span><span>Billing</span></Link>
       </nav>
       <div className="admin-sidebar-footer"><div className="admin-sidebar-profile"><span className="admin-profile-avatar">SD</span><span><strong>Administrator</strong><small>Sky Designers</small></span></div><button type="button" onClick={signOut} className="admin-signout"><LogOut size={18} /> <span>Sign Out</span></button></div>
     </aside>

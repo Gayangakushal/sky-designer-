@@ -138,7 +138,7 @@ const Navbar = ({ onBookCall }: { onBookCall: () => void }) => {
               onClick={onBookCall}
               className="button-shine inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(23,107,255,.32)] transition hover:-translate-y-0.5 hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06142b] xl:px-5"
             >
-              Start a Project <ArrowUpRight size={16} />
+              Discuss Your Project <ArrowUpRight size={16} />
             </button>
           </div>
 
@@ -199,7 +199,7 @@ const Navbar = ({ onBookCall }: { onBookCall: () => void }) => {
               }}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-sm font-bold text-white"
             >
-              Start a Project <ArrowUpRight size={16} />
+              Discuss Your Project <ArrowUpRight size={16} />
             </button>
           </motion.div>
         )}

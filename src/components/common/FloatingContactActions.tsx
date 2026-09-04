@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Phone } from "lucide-react";
-import { company } from "@/data/siteData";
+import { useCompany } from "@/hooks/useCompany";
 import { MOTION } from "@/lib/motion";
 
 const WhatsAppIcon = () => (
@@ -21,6 +21,7 @@ const WhatsAppIcon = () => (
 
 const FloatingContactActions = () => {
   const reduceMotion = useReducedMotion();
+  const company = useCompany();
 
   return (
     <motion.aside

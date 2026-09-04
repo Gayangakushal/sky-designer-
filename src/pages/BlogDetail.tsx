@@ -234,6 +234,13 @@ const BlogDetail = () => {
                       .
                     </p>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setBookingOpen(true)}
+                    className="mt-7 inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-5 text-sm font-extrabold text-white transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50"
+                  >
+                    Discuss Your Project
+                  </button>
                 </aside>
                 <div className="mt-14 border-t border-slate-200 pt-8">
                   <Link

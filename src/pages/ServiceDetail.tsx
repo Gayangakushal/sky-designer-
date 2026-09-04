@@ -62,7 +62,20 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
         <aside className="rounded-[24px] bg-slate-50 p-7 sm:p-9">
           <h2 className="font-heading text-2xl font-bold text-slate-950">What you can expect</h2>
           <ul className="mt-6 grid gap-5">{service.outcomes.map((outcome) => <li key={outcome} className="flex gap-3 text-sm leading-7 text-slate-600"><Check size={18} className="mt-1 shrink-0 text-primary" /> {outcome}</li>)}</ul>
-          <button type="button" onClick={() => setBookingOpen(true)} className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-extrabold text-white">Discuss this service <ArrowRight size={16} /></button>
+          <div className="mt-8 flex flex-col items-start gap-4">
+            <button
+              type="button"
+              onClick={() => setBookingOpen(true)}
+              data-conversion-event="service_enquiry_click"
+              data-conversion-context={service.slug}
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-extrabold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              Discuss This Service <ArrowRight size={16} aria-hidden="true" />
+            </button>
+            <a href="#related-work" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              View Relevant Work <ArrowRight size={15} aria-hidden="true" />
+            </a>
+          </div>
           <p className="mt-5 text-xs leading-6 text-slate-500">
             {service.slug === "digital-strategy-growth" ? (
               <>Ready to activate the plan? Explore our <Link to="/services/performance-advertising" className="font-bold text-primary">performance marketing service</Link></>
@@ -73,7 +86,7 @@ const ServiceDetail = ({ service }: { service: ServicePageData }) => {
           </p>
         </aside>
       </section>
-      <section className="bg-[#030713] py-16 text-white sm:py-20" aria-labelledby="related-work-heading">
+      <section id="related-work" className="scroll-mt-24 bg-[#030713] py-16 text-white sm:py-20" aria-labelledby="related-work-heading">
           <div className="site-container">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>

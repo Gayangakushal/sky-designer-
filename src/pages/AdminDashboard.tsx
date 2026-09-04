@@ -21,6 +21,7 @@ import {
   Inbox,
   ArrowRight,
   BookOpen,
+  ReceiptText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -320,6 +321,10 @@ const AdminDashboard = () => {
           <a href="/admin/blog" className="admin-nav-item">
             <span className="admin-nav-icon"><BookOpen size={18} /></span>
             <span>Blog</span>
+          </a>
+          <a href="/admin/billing" className="admin-nav-item">
+            <span className="admin-nav-icon"><ReceiptText size={18} /></span>
+            <span>Billing</span>
           </a>
         </nav>
         <div className="admin-sidebar-footer">

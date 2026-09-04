@@ -25,6 +25,8 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as WorkIndexRouteImport } from './routes/work.index'
 import { Route as WorkSlugRouteImport } from './routes/work.$slug'
+import { Route as AdminBillingIndexRouteImport } from './routes/admin.billing.index'
+import { Route as AdminBillingSectionRouteImport } from './routes/admin.billing.$section'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdEditRouteImport } from './routes/admin.blog.$id.edit'
@@ -109,6 +111,16 @@ const WorkSlugRoute = WorkSlugRouteImport.update({
   path: '/work/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBillingIndexRoute = AdminBillingIndexRouteImport.update({
+  id: '/admin/billing/',
+  path: '/admin/billing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBillingSectionRoute = AdminBillingSectionRouteImport.update({
+  id: '/admin/billing/$section',
+  path: '/admin/billing/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   id: '/admin/blog/',
   path: '/admin/blog/',
@@ -142,7 +154,9 @@ export interface FileRoutesByFullPath {
   '/careers/': typeof CareersIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/work/': typeof WorkIndexRoute
+  '/admin/billing/$section': typeof AdminBillingSectionRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/billing/': typeof AdminBillingIndexRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/blog/$id/edit': typeof AdminBlogIdEditRoute
 }
@@ -163,7 +177,9 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersIndexRoute
   '/services': typeof ServicesIndexRoute
   '/work': typeof WorkIndexRoute
+  '/admin/billing/$section': typeof AdminBillingSectionRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/billing': typeof AdminBillingIndexRoute
   '/admin/blog': typeof AdminBlogIndexRoute
   '/admin/blog/$id/edit': typeof AdminBlogIdEditRoute
 }
@@ -185,7 +201,9 @@ export interface FileRoutesById {
   '/careers/': typeof CareersIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/work/': typeof WorkIndexRoute
+  '/admin/billing/$section': typeof AdminBillingSectionRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/billing/': typeof AdminBillingIndexRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
   '/admin/blog/$id/edit': typeof AdminBlogIdEditRoute
 }
@@ -208,7 +226,9 @@ export interface FileRouteTypes {
     | '/careers/'
     | '/services/'
     | '/work/'
+    | '/admin/billing/$section'
     | '/admin/blog/new'
+    | '/admin/billing/'
     | '/admin/blog/'
     | '/admin/blog/$id/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -229,7 +249,9 @@ export interface FileRouteTypes {
     | '/careers'
     | '/services'
     | '/work'
+    | '/admin/billing/$section'
     | '/admin/blog/new'
+    | '/admin/billing'
     | '/admin/blog'
     | '/admin/blog/$id/edit'
   id:
@@ -250,7 +272,9 @@ export interface FileRouteTypes {
     | '/careers/'
     | '/services/'
     | '/work/'
+    | '/admin/billing/$section'
     | '/admin/blog/new'
+    | '/admin/billing/'
     | '/admin/blog/'
     | '/admin/blog/$id/edit'
   fileRoutesById: FileRoutesById
@@ -272,7 +296,9 @@ export interface RootRouteChildren {
   CareersIndexRoute: typeof CareersIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   WorkIndexRoute: typeof WorkIndexRoute
+  AdminBillingSectionRoute: typeof AdminBillingSectionRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminBillingIndexRoute: typeof AdminBillingIndexRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   AdminBlogIdEditRoute: typeof AdminBlogIdEditRoute
 }
@@ -391,6 +417,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/billing/': {
+      id: '/admin/billing/'
+      path: '/admin/billing'
+      fullPath: '/admin/billing/'
+      preLoaderRoute: typeof AdminBillingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/billing/$section': {
+      id: '/admin/billing/$section'
+      path: '/admin/billing/$section'
+      fullPath: '/admin/billing/$section'
+      preLoaderRoute: typeof AdminBillingSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/blog/': {
       id: '/admin/blog/'
       path: '/admin/blog'
@@ -432,7 +472,9 @@ const rootRouteChildren: RootRouteChildren = {
   CareersIndexRoute: CareersIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   WorkIndexRoute: WorkIndexRoute,
+  AdminBillingSectionRoute: AdminBillingSectionRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminBillingIndexRoute: AdminBillingIndexRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   AdminBlogIdEditRoute: AdminBlogIdEditRoute,
 }

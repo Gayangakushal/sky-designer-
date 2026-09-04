@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "@/lib/router-compat";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
-import { company } from "@/data/siteData";
+import { useCompany } from "@/hooks/useCompany";
 
 type PackageOption = {
   id: string;
@@ -581,13 +581,13 @@ const defaultPackages: Record<string, PackageOption[]> = {
 };
 
 const Packages = () => {
-  const [searchParams] = useSearchParams();
+  const company = useCompany();
   const [step, setStep] = useState(1);
   const [serviceCategory, setServiceCategory] = useState<string | null>(null);
   const [businessPlan, setBusinessPlan] = useState<string | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
-  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const adminPanelOpen = false;
   const [customPackages, setCustomPackages] = useState<PackageOption[]>([]);
   const [newPackage, setNewPackage] = useState({
     title: "",
@@ -596,23 +596,6 @@ const Packages = () => {
     plan: "Standard",
     visible: true,
   });
-
-  useEffect(() => {
-    if (searchParams.get("admin") === "true") {
-      setAdminPanelOpen(true);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "a") {
-        setAdminPanelOpen(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   useEffect(() => {
     if (selectedPackageId) {
@@ -774,6 +757,7 @@ const Packages = () => {
                             setServiceCategory(category);
                             setConfirmed(false);
                           }}
+                          aria-pressed={active}
                           className={`rounded-3xl border p-6 text-left transition-all duration-200 ${
                             active
                               ? "border-sky-300 bg-sky-500/20 shadow-[0_15px_40px_-20px_rgba(56,189,248,0.8)]"
@@ -799,6 +783,7 @@ const Packages = () => {
                           key={plan}
                           type="button"
                           onClick={() => setBusinessPlan(plan)}
+                          aria-pressed={active}
                           className={`rounded-3xl border p-6 text-left transition-all duration-200 ${
                             active
                               ? "border-blue-400 bg-blue-500/15 shadow-[0_15px_40px_-20px_rgba(23,107,255,0.8)]"
@@ -829,6 +814,7 @@ const Packages = () => {
                           key={item.id}
                           type="button"
                           onClick={() => setSelectedPackageId(item.id)}
+                          aria-pressed={active}
                           className={`rounded-3xl border p-6 text-left transition-all duration-200 ${
                             active
                               ? "border-slate-100 bg-slate-100/10 shadow-[0_15px_40px_-20px_rgba(255,255,255,0.38)]"
@@ -899,9 +885,11 @@ const Packages = () => {
                     href={`${company.whatsapp}?text=${encodeURIComponent(`Hello, I would like to confirm my ${serviceCategory} ${businessPlan} package: ${selectedPackage.title}. Please help with the next steps.`)}`}
                     target="_blank"
                     rel="noreferrer"
+                    data-conversion-event="package_enquiry_click"
+                    data-conversion-context="selected-package"
                     className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-blue-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-blue-400"
                   >
-                    Open WhatsApp
+                    Discuss This Package on WhatsApp
                   </a>
                 </div>
               )}
@@ -917,9 +905,11 @@ const Packages = () => {
               href={company.whatsapp}
               target="_blank"
               rel="noreferrer"
+              data-conversion-event="package_enquiry_click"
+              data-conversion-context="custom-quote"
               className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-[#0B3C5D] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0A3450]"
             >
-              WhatsApp Support
+              Get a Custom Quote on WhatsApp
             </a>
           </aside>
         </div>

@@ -191,7 +191,7 @@ const HeroSection = ({ onBookCall }: { onBookCall: () => void }) => {
               onClick={onBookCall}
               className="button-shine group inline-flex min-h-14 items-center justify-center gap-3 rounded-xl bg-[#0a6cff] px-8 text-sm font-extrabold text-white shadow-[0_16px_45px_rgba(10,108,255,.38)] transition duration-300 hover:-translate-y-1 hover:bg-[#1980ff] hover:shadow-[0_20px_55px_rgba(10,108,255,.52)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020713]"
             >
-              Book a Call
+              Discuss Your Project
               <ArrowRight
                 size={17}
                 className="transition-transform duration-300 group-hover:translate-x-1"

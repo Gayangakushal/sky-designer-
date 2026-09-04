@@ -322,6 +322,13 @@ const WorkDetail = () => {
                         Visit project <ExternalLink size={15} />
                       </a>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => setBookingOpen(true)}
+                      className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-extrabold text-white transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101f]"
+                    >
+                      Discuss a Similar Project
+                    </button>
                     <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-6 text-slate-400">
                       Published by <Link to="/about" className="font-bold text-blue-300">Sky Designers</Link>. Browse the agency’s <Link to="/services" className="font-bold text-blue-300">digital marketing and creative services</Link>.
                     </p>

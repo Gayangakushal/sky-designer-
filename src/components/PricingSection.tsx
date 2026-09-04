@@ -3,8 +3,8 @@ import { ArrowRight, Check, MessageCircle, Minus, Sparkles } from "lucide-react"
 import { type PricingPackage } from "@/data/pricingPackages";
 import { type ComparisonValue } from "@/data/pricingComparison";
 import { usePricingData } from "@/hooks/usePricingData";
-import { company } from "@/data/siteData";
 import { useNearViewport } from "@/hooks/useNearViewport";
+import { useCompany } from "@/hooks/useCompany";
 
 const ComparisonValueCell = ({ value }: { value: ComparisonValue }) => {
   if (typeof value === "string") return <span>{value}</span>;
@@ -34,6 +34,7 @@ const PackageComparison = ({
   onSelectPackage: (packageName: string) => void;
   enabled: boolean;
 }) => {
+  const company = useCompany();
   const { packages: pricingPackages, comparison: pricingComparison } = usePricingData(enabled);
   const comparisonPackages = pricingPackages;
 
@@ -210,6 +211,7 @@ const PricingCard = ({
   reduceMotion: boolean;
   onSelect: (packageName: string) => void;
 }) => {
+  const company = useCompany();
   const {
     category,
     name,
@@ -300,13 +302,13 @@ const PricingCard = ({
             Let’s build a package around your goals.
           </p>
           <a
-            href="tel:+94779507298"
+            href={`tel:${company.phone}`}
             className="mt-2 inline-flex min-h-11 items-center justify-center px-3 text-sm font-bold text-blue-200 transition hover:text-white"
           >
-            +94 77 950 7298
+            {company.phoneDisplay}
           </a>
           <a
-            href="tel:+94779507298"
+            href={`tel:${company.phone}`}
             className="mt-2 inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.07] px-5 text-sm font-extrabold uppercase text-white transition duration-300 hover:-translate-y-0.5 hover:border-blue-300/40 hover:bg-white/[0.11] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071025]"
           >
             {buttonLabel}
