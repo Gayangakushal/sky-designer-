@@ -26,7 +26,7 @@ const billingNav = [
 ] as const;
 
 export default function BillingShell({ children }: { children: ReactNode }) {
-  const { loading, isAdmin, signOut } = useAdminAuth();
+  const { loading, isAdmin, isAccounting, signOut } = useAdminAuth();
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   if (loading)
@@ -35,7 +35,7 @@ export default function BillingShell({ children }: { children: ReactNode }) {
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" />
       </div>
     );
-  if (!isAdmin) return null;
+  if (!isAdmin && !isAccounting) return null;
   return (
     <div className="admin-shell billing-shell min-h-screen">
       <button
@@ -73,20 +73,12 @@ export default function BillingShell({ children }: { children: ReactNode }) {
         </div>
         <p className="admin-nav-label">Workspace</p>
         <nav className="admin-nav billing-nav">
-          <Link to="/admin" className="admin-nav-item">
-            <span className="admin-nav-icon">
-              <Building2 size={18} />
-            </span>
-            Admin Home
-          </Link>
-          <Link to="/admin/blog" className="admin-nav-item">
-            <span className="admin-nav-icon">
-              <BookOpen size={18} />
-            </span>
-            Blog
-          </Link>
+          {isAdmin && <>
+            <Link to="/admin" className="admin-nav-item"><span className="admin-nav-icon"><Building2 size={18} /></span>Admin Home</Link>
+            <Link to="/admin/blog" className="admin-nav-item"><span className="admin-nav-icon"><BookOpen size={18} /></span>Blog</Link>
+          </>}
           <p className="admin-nav-label billing-nav-heading">Billing</p>
-          {billingNav.map(([to, label, Icon]) => (
+          {billingNav.filter(([to]) => isAdmin || to !== "/admin/billing/settings").map(([to, label, Icon]) => (
             <Link
               key={to}
               to={to}
@@ -106,7 +98,7 @@ export default function BillingShell({ children }: { children: ReactNode }) {
               <FileCheck2 size={15} />
             </span>
             <span>
-              <strong>Billing Admin</strong>
+              <strong>{isAccounting ? "Accounting" : "Billing Admin"}</strong>
               <small>Sky Designers</small>
             </span>
           </div>

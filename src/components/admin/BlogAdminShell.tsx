@@ -1,13 +1,18 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { BookOpen, LayoutDashboard, LogOut, Menu, ReceiptText, X } from "lucide-react";
-import { Link, useLocation } from "@/lib/router-compat";
+import { Link, useLocation, useNavigate } from "@/lib/router-compat";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 
 const BlogAdminShell = ({ children }: { children: ReactNode }) => {
-  const { loading, isAdmin, signOut } = useAdminAuth();
+  const { loading, isAdmin, isAccounting, signOut } = useAdminAuth();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
   if (loading) return <div className="admin-shell grid min-h-screen place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" /></div>;
+  useEffect(() => {
+    if (isAccounting) navigate("/admin/billing");
+  }, [isAccounting, navigate]);
+  if (isAccounting) return null;
   if (!isAdmin) return null;
   return <div className="admin-shell min-h-screen">
     <button type="button" className="admin-mobile-menu" onClick={() => setSidebarOpen(true)} aria-label="Open navigation"><Menu size={22} /></button>

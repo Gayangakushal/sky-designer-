@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PricingManager from "@/components/admin/PricingManager";
@@ -103,7 +104,8 @@ const applicationStatusClass = (status: string) => {
 };
 
 const AdminDashboard = () => {
-  const { loading, isAdmin, signOut } = useAdminAuth();
+  const { loading, isAdmin, isAccounting, signOut } = useAdminAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("overview");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -131,6 +133,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (isAdmin) fetchData();
   }, [isAdmin]);
+
+  useEffect(() => {
+    if (isAccounting) navigate("/admin/billing");
+  }, [isAccounting, navigate]);
 
   const updateBookingStatus = async (id: string, status: string) => {
     await supabase.from("bookings").update({ status }).eq("id", id);
@@ -188,6 +194,9 @@ const AdminDashboard = () => {
     );
   }
 
+  if (isAccounting) {
+    return null;
+  }
   if (!isAdmin) return null;
 
   const todayBookings = bookings.filter(

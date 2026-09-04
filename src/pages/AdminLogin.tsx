@@ -27,22 +27,25 @@ const AdminLogin = () => {
       return;
     }
 
-    // Check if user has admin role
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", data.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
+      .in("role", ["admin", "accounting"]);
 
-    if (!roleData) {
+    const role = roleData?.some((entry) => entry.role === "admin")
+      ? "admin"
+      : roleData?.some((entry) => entry.role === "accounting")
+        ? "accounting"
+        : null;
+    if (!role) {
       await supabase.auth.signOut();
       toast({ title: "Access Denied", description: "You do not have admin privileges.", variant: "destructive" });
       setLoading(false);
       return;
     }
 
-    navigate("/admin");
+    navigate(role === "accounting" ? "/admin/billing" : "/admin");
     setLoading(false);
   };
 

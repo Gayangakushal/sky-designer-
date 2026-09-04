@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const useAdminAuth = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<"admin" | "accounting" | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,11 +14,16 @@ export const useAdminAuth = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .eq("role", "admin")
-        .maybeSingle();
+        .in("role", ["admin", "accounting"]);
 
-      if (data) {
-        setIsAdmin(true);
+      const currentRole = data?.some((entry) => entry.role === "admin")
+        ? "admin"
+        : data?.some((entry) => entry.role === "accounting")
+          ? "accounting"
+          : null;
+      if (currentRole) {
+        setRole(currentRole);
+        setIsAdmin(currentRole === "admin");
       } else {
         navigate("/admin/login");
       }
@@ -29,6 +35,7 @@ export const useAdminAuth = () => {
         checkAdmin(session.user.id);
       } else {
         setIsAdmin(false);
+        setRole(null);
         setLoading(false);
         navigate("/admin/login");
       }
@@ -51,5 +58,5 @@ export const useAdminAuth = () => {
     navigate("/admin/login");
   };
 
-  return { loading, isAdmin, signOut };
+  return { loading, isAdmin, isAccounting: role === "accounting", role, signOut };
 };
