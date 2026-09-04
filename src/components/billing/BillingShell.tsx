@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   BookOpen,
   Building2,
@@ -10,10 +10,11 @@ import {
   Menu,
   ReceiptText,
   Settings,
+  ShieldCheck,
   Users,
   X,
 } from "lucide-react";
-import { Link, useLocation } from "@/lib/router-compat";
+import { Link, useLocation, useNavigate } from "@/lib/router-compat";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 
 const billingNav = [
@@ -29,6 +30,10 @@ export default function BillingShell({ children }: { children: ReactNode }) {
   const { loading, isAdmin, isAccounting, signOut } = useAdminAuth();
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAccounting && pathname.startsWith("/admin/billing/settings")) navigate("/admin/billing");
+  }, [isAccounting, navigate, pathname]);
   if (loading)
     return (
       <div className="admin-shell grid min-h-screen place-items-center">
@@ -76,6 +81,7 @@ export default function BillingShell({ children }: { children: ReactNode }) {
           {isAdmin && <>
             <Link to="/admin" className="admin-nav-item"><span className="admin-nav-icon"><Building2 size={18} /></span>Admin Home</Link>
             <Link to="/admin/blog" className="admin-nav-item"><span className="admin-nav-icon"><BookOpen size={18} /></span>Blog</Link>
+            <Link to="/admin/staff-access" className="admin-nav-item"><span className="admin-nav-icon"><ShieldCheck size={18} /></span>Staff Access</Link>
           </>}
           <p className="admin-nav-label billing-nav-heading">Billing</p>
           {billingNav.filter(([to]) => isAdmin || to !== "/admin/billing/settings").map(([to, label, Icon]) => (

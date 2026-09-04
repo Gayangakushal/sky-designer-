@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { BookOpen, LayoutDashboard, LogOut, Menu, ReceiptText, X } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, Menu, ReceiptText, ShieldCheck, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "@/lib/router-compat";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 
@@ -8,10 +8,10 @@ const BlogAdminShell = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
-  if (loading) return <div className="admin-shell grid min-h-screen place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" /></div>;
   useEffect(() => {
     if (isAccounting) navigate("/admin/billing");
   }, [isAccounting, navigate]);
+  if (loading) return <div className="admin-shell grid min-h-screen place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" /></div>;
   if (isAccounting) return null;
   if (!isAdmin) return null;
   return <div className="admin-shell min-h-screen">
@@ -24,6 +24,7 @@ const BlogAdminShell = ({ children }: { children: ReactNode }) => {
         <Link to="/admin" className="admin-nav-item"><span className="admin-nav-icon"><LayoutDashboard size={18} /></span><span>Dashboard</span></Link>
         <Link to="/admin/blog" className={`admin-nav-item ${pathname.startsWith("/admin/blog") ? "is-active" : ""}`}><span className="admin-nav-icon"><BookOpen size={18} /></span><span>Blog</span></Link>
         <Link to="/admin/billing" className="admin-nav-item"><span className="admin-nav-icon"><ReceiptText size={18} /></span><span>Billing</span></Link>
+        <Link to="/admin/staff-access" className="admin-nav-item"><span className="admin-nav-icon"><ShieldCheck size={18} /></span><span>Staff Access</span></Link>
       </nav>
       <div className="admin-sidebar-footer"><div className="admin-sidebar-profile"><span className="admin-profile-avatar">SD</span><span><strong>Administrator</strong><small>Sky Designers</small></span></div><button type="button" onClick={signOut} className="admin-signout"><LogOut size={18} /> <span>Sign Out</span></button></div>
     </aside>
