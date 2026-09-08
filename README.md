@@ -28,11 +28,7 @@ Complete the existing Supabase backend and admin login system so that only one a
 
 Admin login credentials:
 
-Email:
-kowshallagayanga@gmail.com
 
-Initial password:
-gayanga2005
 
 SECURITY REQUIREMENTS
 
