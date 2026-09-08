@@ -30,6 +30,17 @@ Creating, duplicating, converting, and updating documents and recording/reversin
 
 Each financial document stores JSON snapshots of company, client, and payment details plus immutable line-item rows. Changing a client or billing setting therefore does not change the old document. The React A4 document uses semantic text, print CSS, repeatable table headers, page-break safeguards, and the browser print pipeline for selectable-text PDF output without a screenshot or a heavy PDF runtime.
 
+Client snapshots include the required client name and primary phone and, when supplied, `phone_secondary`. Snapshot JSON remains flexible, so historical records without the newer key continue to render unchanged. Empty address and location values are omitted from document previews, and issuing a document refreshes its snapshot without changing previously issued documents.
+
+## Client profile rules
+
+- Required for create and update: client/business name and primary phone (`phone`).
+- Optional: secondary phone (`phone_secondary`), contact person, email, billing address, city, district, province, country, postal code, tax/business identifier, and notes.
+- Empty optional values are stored as `NULL`. Country retains a safe `Sri Lanka` default in the new-client UI but can be empty.
+- District-to-province mapping runs only when a district is selected. Clearing the district clears the mapped province and does not block saving.
+- Phone numbers are not unique; two clients may share either number.
+- Client, invoice, and quotation searches include both phone fields.
+
 ## Frontend routes
 
 - `/admin/billing`
@@ -40,4 +51,3 @@ Each financial document stores JSON snapshots of company, client, and payment de
 - `/admin/billing/settings`
 
 All render through `BillingShell`, which checks the existing `useAdminAuth` guard. This client guard is supplementary; the PHP API independently enforces admin authorization.
-

@@ -11,6 +11,7 @@ const blank: Partial<BillingClient> = {
   contact_person: "",
   email: "",
   phone: "",
+  phone_secondary: "",
   billing_address: "",
   city: "",
   district: "",
@@ -86,8 +87,11 @@ export default function ClientsPage() {
                     <tr key={c.id}>
                       <td className="admin-table-primary">{c.name}</td>
                       <td>
-                        {c.contact_person}
-                        <small className="billing-cell-sub">{c.email || c.phone}</small>
+                        {c.contact_person || c.email || "—"}
+                        {c.phone && <small className="billing-cell-sub">Primary: {c.phone}</small>}
+                        {c.phone_secondary && (
+                          <small className="billing-cell-sub">Secondary: {c.phone_secondary}</small>
+                        )}
                       </td>
                       <td>{[c.city, c.country].filter(Boolean).join(", ")}</td>
                       <td>
@@ -154,11 +158,37 @@ function ClientDialog({
   onSave: (v: Partial<BillingClient>) => void;
 }) {
   const [form, setForm] = useState(value);
+  const [validationError, setValidationError] = useState("");
   const set = (key: keyof BillingClient, val: string | boolean) =>
     setForm((p) => ({ ...p, [key]: val }));
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    onSave(form);
+    const name = form.name?.trim() || "";
+    const phone = form.phone?.trim() || "";
+    const phoneSecondary = form.phone_secondary?.trim() || "";
+    const email = form.email?.trim() || "";
+    if (!name) {
+      setValidationError("Client name is required.");
+      return;
+    }
+    if (!phone) {
+      setValidationError("Primary phone number is required.");
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      setValidationError("Please check the primary phone number.");
+      return;
+    }
+    if (phoneSecondary && !isValidPhone(phoneSecondary)) {
+      setValidationError("Please check the secondary phone number.");
+      return;
+    }
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+      setValidationError("Please enter a valid email address.");
+      return;
+    }
+    setValidationError("");
+    onSave({ ...form, name, phone, phone_secondary: phoneSecondary, email });
   };
   return (
     <div className="billing-modal-backdrop" role="presentation">
@@ -169,7 +199,7 @@ function ClientDialog({
             <X />
           </button>
         </div>
-        <form onSubmit={submit} className="billing-form-grid">
+        <form onSubmit={submit} className="billing-form-grid" noValidate>
           <Field
             label="Client / business name *"
             value={form.name}
@@ -177,12 +207,24 @@ function ClientDialog({
             required
           />
           <Field
+            label="Primary phone *"
+            type="tel"
+            value={form.phone}
+            onChange={(v) => set("phone", v)}
+            required
+          />
+          <Field
+            label="Secondary phone"
+            type="tel"
+            value={form.phone_secondary}
+            onChange={(v) => set("phone_secondary", v)}
+          />
+          <Field
             label="Contact person"
             value={form.contact_person}
             onChange={(v) => set("contact_person", v)}
           />
           <Field label="Email" type="email" value={form.email} onChange={(v) => set("email", v)} />
-          <Field label="Phone" value={form.phone} onChange={(v) => set("phone", v)} />
           <Field
             label="Address line"
             value={form.billing_address}
@@ -233,16 +275,16 @@ function ClientDialog({
             <span>Notes</span>
             <textarea value={form.notes || ""} onChange={(e) => set("notes", e.target.value)} />
           </label>
-          {error ? (
+          {validationError || error ? (
             <p className="billing-form-error billing-wide">
-              {error instanceof Error ? error.message : "Could not save client."}
+              {validationError || (error instanceof Error ? error.message : "Could not save client.")}
             </p>
           ) : null}
           <div className="billing-modal-actions billing-wide">
             <button type="button" className="billing-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button className="billing-primary" disabled={pending || !form.name?.trim()}>
+            <button className="billing-primary" disabled={pending}>
               {pending ? "Saving…" : "Save Client"}
             </button>
           </div>
@@ -251,6 +293,12 @@ function ClientDialog({
     </div>
   );
 }
+
+function isValidPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return /^[0-9+().\-\s/]+$/.test(value) && digits.length >= 7 && digits.length <= 15;
+}
+
 function Field({
   label,
   value,

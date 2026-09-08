@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -15,12 +15,18 @@ import ReviewsSection from "@/components/ReviewsSection";
 import CtaSection from "@/components/CtaSection";
 import LocationSection from "@/components/LocationSection";
 import Footer from "@/components/Footer";
+import AwardAnnouncementModal from "@/components/AwardAnnouncementModal";
 
 const BookingModal = lazy(() => import("@/components/BookingModal"));
 
 const Index = () => {
+  const [awardAnnouncementOpen, setAwardAnnouncementOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState("");
+
+  useEffect(() => {
+    setAwardAnnouncementOpen(true);
+  }, []);
 
   const openBooking = (packageName = "") => {
     setSelectedPackage(packageName);
@@ -29,6 +35,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <AwardAnnouncementModal
+        isOpen={awardAnnouncementOpen}
+        onClose={() => setAwardAnnouncementOpen(false)}
+      />
       <Navbar onBookCall={() => openBooking()} />
       <main>
         <HeroSection onBookCall={() => openBooking()} />

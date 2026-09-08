@@ -8,10 +8,11 @@ export interface BillingClient {
   contact_person: string | null;
   email: string | null;
   phone: string | null;
+  phone_secondary: string | null;
   billing_address: string | null;
   city: string | null;
   province: string | null;
-  country: string;
+  country: string | null;
   tax_identifier: string | null;
   district?: string | null;
   postal_code?: string | null;
@@ -72,7 +73,7 @@ export interface BillingQuote {
   tax: number;
   total: number;
   items?: LineItem[];
-  client_snapshot?: Record<string, string>;
+  client_snapshot?: Record<string, string | number | boolean | null>;
   company_snapshot?: DocumentSnapshot;
   created_at: string;
   updated_at: string;
@@ -101,7 +102,7 @@ export interface BillingInvoice {
   source_quote_id: number | null;
   items?: LineItem[];
   payments?: BillingPayment[];
-  client_snapshot?: Record<string, string>;
+  client_snapshot?: Record<string, string | number | boolean | null>;
   company_snapshot?: DocumentSnapshot;
   created_at: string;
   updated_at: string;

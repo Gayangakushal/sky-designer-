@@ -56,7 +56,10 @@ const formatDateTime = (value?: string | null) => {
 const displayMoney = (value: number | string, currency: string) =>
   money(value, currency).replace(/\u00a0/g, " ");
 
-const populatedClientLines = (client: Record<string, string>, document: Doc) =>
+const populatedClientLines = (
+  client: Record<string, string | number | boolean | null>,
+  document: Doc,
+) =>
   [
     client.contact_person,
     client.billing_address,
@@ -66,7 +69,8 @@ const populatedClientLines = (client: Record<string, string>, document: Doc) =>
     client.country,
     client.postal_code,
     client.email,
-    client.phone,
+    client.phone ? `Phone: ${client.phone}` : null,
+    client.phone_secondary ? `Phone 2: ${client.phone_secondary}` : null,
   ].filter(Boolean).map(String).filter((value) => value !== String(client.name || document.client_name));
 
 function MetaRow({ label, value }: { label: string; value?: string | null }) {

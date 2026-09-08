@@ -12,6 +12,7 @@ import {
 import { Link } from "@/lib/router-compat";
 import { services } from "@/data/siteData";
 import { useCompany } from "@/hooks/useCompany";
+import footerAward from "@/assets/footer-award-2026.png";
 import MotionReveal from "./MotionReveal";
 
 const TikTokIcon = ({ size = 17, ...props }: LucideProps) => (
@@ -36,7 +37,7 @@ const Footer = () => {
       <div className="blue-grid absolute inset-0 opacity-20" />
       <div className="site-container relative py-14 sm:py-18">
         <MotionReveal amount={0.08}>
-          <div className="grid gap-12 border-b border-white/10 pb-12 lg:grid-cols-[1.2fr_.75fr_.85fr_1fr]">
+          <div className="grid gap-12 border-b border-white/10 pb-12 md:grid-cols-2 lg:grid-cols-[minmax(220px,1.35fr)_minmax(90px,.6fr)_minmax(120px,.75fr)_minmax(160px,.9fr)_minmax(145px,.65fr)] lg:gap-6 xl:grid-cols-[minmax(300px,1.5fr)_minmax(120px,.7fr)_minmax(160px,.85fr)_minmax(190px,1fr)_minmax(170px,.7fr)] xl:gap-8">
             <div>
               <div className="flex items-center gap-3">
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary font-heading text-sm font-extrabold">
@@ -110,11 +111,20 @@ const Footer = () => {
               </h3>
               <div className="mt-6 grid gap-3 text-sm font-semibold text-slate-300">
                 {services.slice(0, 5).map((service) => (
-                  <Link key={service.title} to={`/services/${service.slug}`} className="transition hover:text-white">
+                  <Link
+                    key={service.title}
+                    to={`/services/${service.slug}`}
+                    className="transition hover:text-white"
+                  >
                     {service.shortTitle}
                   </Link>
                 ))}
-                <Link to="/services" className="font-bold text-blue-300 transition hover:text-white">All services</Link>
+                <Link
+                  to="/services"
+                  className="font-bold text-blue-300 transition hover:text-white"
+                >
+                  All services
+                </Link>
               </div>
             </div>
 
@@ -146,6 +156,18 @@ const Footer = () => {
                   WhatsApp <ArrowUpRight size={16} />
                 </a>
               </div>
+            </div>
+
+            <div className="flex items-center justify-center pt-2 md:col-span-2 md:pt-0 lg:col-span-1 lg:min-w-[145px]">
+              <img
+                src={footerAward}
+                alt="Lanka Chairman's Business Excellence Awards 2026 – Sky Designers"
+                width={1086}
+                height={1448}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-[150px] max-w-full object-contain sm:w-[165px] md:w-[175px] lg:w-[clamp(160px,11vw,220px)]"
+              />
             </div>
           </div>
 
