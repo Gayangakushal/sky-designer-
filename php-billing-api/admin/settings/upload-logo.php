@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
+define('BILLING_ACTION', 'settings/upload-logo');
 require dirname(__DIR__) . '/_bootstrap.php';
-if($billingRole!=='admin')billing_fail('Administrator access required.',403);
 billing_method(['POST']);
 if(!isset($_FILES['logo'])||!is_uploaded_file($_FILES['logo']['tmp_name']))billing_fail('A logo file is required.',422);
 $file=$_FILES['logo'];if((int)$file['size']<1||(int)$file['size']>3*1024*1024)billing_fail('Logo must be smaller than 3 MB.',422);

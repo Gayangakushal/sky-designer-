@@ -14,14 +14,71 @@ if($origin!==''&&!$allowed) billing_fail('Origin not allowed.',403);
 if($allowed){header('Access-Control-Allow-Origin: '.$origin);header('Vary: Origin');header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept');header('Access-Control-Allow-Methods: GET, POST, PATCH, DELETE, OPTIONS');}
 if(($_SERVER['REQUEST_METHOD']??'GET')==='OPTIONS'){http_response_code(204);exit;}
 
-function billing_token(): string { $h=$_SERVER['HTTP_AUTHORIZATION']??$_SERVER['REDIRECT_HTTP_AUTHORIZATION']??''; if($h===''&&function_exists('apache_request_headers')){$x=apache_request_headers();$h=$x['Authorization']??$x['authorization']??'';} if(!preg_match('/^Bearer\s+(.+)$/i',trim($h),$m))billing_fail('Authentication required.',401);return trim($m[1]); }
-function billing_http(string $url,string $key,string $token,?array $body=null): array { $c=curl_init($url);$headers=['Accept: application/json','apikey: '.$key,'Authorization: Bearer '.$token];$o=[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>12,CURLOPT_HTTPHEADER=>$headers];if($body!==null){$headers[]='Content-Type: application/json';$o[CURLOPT_HTTPHEADER]=$headers;$o[CURLOPT_POST]=true;$o[CURLOPT_POSTFIELDS]=json_encode($body);}curl_setopt_array($c,$o);$raw=curl_exec($c);$status=(int)curl_getinfo($c,CURLINFO_HTTP_CODE);curl_close($c);return ['ok'=>$raw!==false&&$status>=200&&$status<300,'data'=>json_decode((string)$raw,true)]; }
-function billing_authenticated_user(array $c): array { if(!function_exists('curl_init'))billing_fail('Server authentication is unavailable.',500);$token=billing_token();$url=rtrim((string)($c['supabase_url']??''),'/');$key=(string)($c['supabase_anon_key']??'');if($url===''||$key==='')billing_fail('Server authentication is not configured.',500);$u=billing_http($url.'/auth/v1/user',$key,$token);if(!$u['ok']||empty($u['data']['id']))billing_fail('Invalid or expired session.',401);foreach(['admin','accounting'] as $role){$r=billing_http($url.'/rest/v1/rpc/has_role',$key,$token,['_user_id'=>$u['data']['id'],'_role'=>$role]);if($r['ok']&&in_array($r['data'],[true,'true'],true))return [$u['data'],$role];}billing_fail('Billing access required.',403);}
-function billing_require_billing_access(array $c): array { global $billingRole;[$user,$billingRole]=billing_authenticated_user($c);return $user;}
-function billing_require_admin(array $c): array { global $billingRole;[$user,$billingRole]=billing_authenticated_user($c);if($billingRole!=='admin')billing_fail('Administrator access required.',403);return $user;}
+function billing_token(): string {
+	$header=$_SERVER['HTTP_AUTHORIZATION']??$_SERVER['REDIRECT_HTTP_AUTHORIZATION']??'';
+	if($header===''&&function_exists('apache_request_headers')){
+		$headers=apache_request_headers();
+		$header=$headers['Authorization']??$headers['authorization']??'';
+	}
+	if(!preg_match('/^Bearer\s+([^\s]+)$/i',trim($header),$matches))billing_fail('Authentication required.',401);
+	return $matches[1];
+}
+function billing_http(string $url,string $key,string $token,?array $body=null): array {
+	$curl=curl_init($url);
+	$headers=['Accept: application/json','apikey: '.$key,'Authorization: Bearer '.$token];
+	$options=[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>12,CURLOPT_HTTPHEADER=>$headers];
+	if($body!==null){$headers[]='Content-Type: application/json';$options[CURLOPT_HTTPHEADER]=$headers;$options[CURLOPT_POST]=true;$options[CURLOPT_POSTFIELDS]=json_encode($body);}
+	curl_setopt_array($curl,$options);
+	$raw=curl_exec($curl);
+	$error=$raw===false?curl_error($curl):null;
+	$status=(int)curl_getinfo($curl,CURLINFO_HTTP_CODE);
+	curl_close($curl);
+	return ['ok'=>$raw!==false&&$status>=200&&$status<300,'status'=>$status,'data'=>json_decode((string)$raw,true),'error'=>$error];
+}
+function billing_supabase_failure(array $response): never {
+	if(($response['status']??0)===401)billing_fail('Invalid or expired session.',401);
+	billing_fail('Supabase verification service unavailable.',503);
+}
+function billing_authenticated_user(array $c): array {
+	if(!function_exists('curl_init'))billing_fail('Server authentication is unavailable.',503);
+	$token=billing_token();
+	$url=rtrim((string)($c['supabase_url']??''),'/');
+	$key=(string)($c['supabase_anon_key']??'');
+	if($url===''||$key==='')billing_fail('Server authentication is not configured.',503);
+	$userResponse=billing_http($url.'/auth/v1/user',$key,$token);
+	if(!$userResponse['ok']||empty($userResponse['data']['id']))billing_supabase_failure($userResponse);
+	return ['user_id'=>(string)$userResponse['data']['id'],'access_token'=>$token,'supabase_url'=>$url,'supabase_key'=>$key,'user'=>$userResponse['data']];
+}
+function billing_has_role(array $auth,string $role): bool {
+	$response=billing_http($auth['supabase_url'].'/rest/v1/rpc/has_role',$auth['supabase_key'],$auth['access_token'],['_user_id'=>$auth['user_id'],'_role'=>$role]);
+	if(!$response['ok'])billing_supabase_failure($response);
+	return in_array($response['data'],[true,'true'],true);
+}
+function billing_require_roles(array $allowedRoles,array $config,string $message): array {
+	global $billingRole,$billingAuth;
+	$billingAuth=billing_authenticated_user($config);
+	foreach($allowedRoles as $role){
+		if(billing_has_role($billingAuth,$role)){
+			$billingRole=$role;
+			return $billingAuth['user'];
+		}
+	}
+	billing_fail($message,403);
+}
+function billing_require_billing_access(array $config): array { return billing_require_roles(['admin','accounting'],$config,'Billing access required.'); }
+function billing_require_admin(array $config): array { return billing_require_roles(['admin'],$config,'Administrator access required.'); }
 
-$adminOnlyActions=['settings/get','settings/update','settings/upload-logo','clients/archive','invoices/delete','quotes/delete','invoices/archive','quotes/archive','payments/reverse'];
-$billingUser=in_array(defined('BILLING_ACTION')?BILLING_ACTION:'',$adminOnlyActions,true)
+$billingActionPolicy=[
+	'dashboard'=>'billing',
+	'clients/list'=>'billing','clients/get'=>'billing','clients/save'=>'billing','clients/archive'=>'admin',
+	'quotes/list'=>'billing','quotes/get'=>'billing','quotes/create'=>'billing','quotes/update'=>'billing','quotes/status'=>'billing','quotes/convert'=>'billing','quotes/duplicate'=>'billing','quotes/delete'=>'admin','quotes/archive'=>'admin',
+	'invoices/list'=>'billing','invoices/get'=>'billing','invoices/create'=>'billing','invoices/update'=>'billing','invoices/status'=>'billing','invoices/delete'=>'admin','invoices/archive'=>'admin',
+	'payments/list'=>'billing','payments/create'=>'billing','payments/reverse'=>'admin',
+	'settings/get'=>'billing','settings/update'=>'admin','settings/upload-logo'=>'admin',
+];
+$billingAction=defined('BILLING_ACTION')?BILLING_ACTION:'';
+if(!isset($billingActionPolicy[$billingAction]))billing_fail('Endpoint not found.',404);
+$billingUser=$billingActionPolicy[$billingAction]==='admin'
 	? billing_require_admin($billingConfig)
 	: billing_require_billing_access($billingConfig);
 try{$db=new PDO($billingConfig['database']['dsn'],$billingConfig['database']['user'],$billingConfig['database']['password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);}catch(Throwable){billing_fail('Billing database is unavailable.',500);}
